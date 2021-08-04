@@ -1,6 +1,4 @@
 const Discord = require('discord.js');
-var CronJob = require('cron').CronJob;
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const dotenv = require('dotenv');
 const client = new Discord.Client({
     intents: [
