@@ -7,7 +7,6 @@ const client = new Discord.Client({
     intents: [
       "GUILDS",
       "GUILD_MEMBERS",
-      "GUILD_BANS",
       "GUILD_EMOJIS",
       "GUILD_INTEGRATIONS",
       "GUILD_MESSAGE_REACTIONS",
@@ -44,21 +43,6 @@ charactersLength));
  return result;
 };
 
-// validate an email
-function validateEmail(email) {
-  var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(email);
-};
-
-
-function validateBUSDEmail(email) {
-  if (/berkeley.net\s*$/.test(email)) {
-  return true;
-  } else {
-  return false;
-  };
-};
-
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -82,7 +66,7 @@ client.on('messageCreate', async message => {
         {
         name: 'email',
         type: 'STRING',
-        description: `Your berkeley.net email!`,
+        description: `Your berkeley.net email`,
         required: true
         }                      
       ]
@@ -120,166 +104,244 @@ client.on('interactionCreate', async interaction => {
 	if (!interaction.isCommand()) return;
 
   if (interaction.commandName === 'verify') {
+    console.time('verify');
+    
     const user = interaction.user;
     const guild = interaction.guild;
     const channel = interaction.channel;
     const message = interaction.message;
 
-    if (interaction.channel.id == '787039874384396329') {
-      const embed = {
-        color: 0xeff624,
-        title: 'Verification',
-        description: `**${user.tag}** has already been verified!`,
-        timestamp: new Date(),
-      };
-      await interaction.reply({ embeds: [embed] });
-      return;
+    function validateEmail(email) {
+      var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(email);
     };
-
-    var email = interaction.options.get('email');
-    console.log(email.value);
-    var email = email.value.toLowerCase();
-
-    var id = interaction.user.id;
-
-    // stop function if email is invalid
-    if (!validateEmail(email)) {
-      return;
-    }
-
-    // stop function if email is already verified
-
-    var emailsJSON = fs.readFileSync('./emails.json', 'utf8');
-    var emailsDatabase = JSON.parse(emailsJSON);
-
-    // see if email appears in array
-    function emailExists(email) {
-      for (var i = 0; i < emailsDatabase.length; i++) {
-        if (emailsDatabase[i].email === email) {
-          return true;
-        }
-      }
-      return false;
-    };
-
-    // check if id appears in array
-    function idExists(id) {
-      for (var i = 0; i < emailsDatabase.length; i++) {
-        if (emailsDatabase[i].id === id) {
-          return true;
-        }
-      }
-      return false;
-    };
-
-    var emailCheck = emailExists(email);
-    var idCheck = idExists(id);
-
-    if (emailCheck) {
-      const embed = {
-        color: 0xeff624,
-        title: 'Verification',
-        description: `**${email}** has already been verified!`,
-        timestamp: new Date(),
-      };
-      await interaction.reply({ content: { embeds: [embed] },  ephemeral: true });
-      return;
-    };
-
-    if (!idCheck) {
-
-      // send verification email to user
-
-      let code = makeid(5);
-
-      const msg = {
-        to: `${email}`,
-        from: {
-            email: 'discord@bhs.eliothertenstein.com',
-            name: 'Berkeley High Discord'
-        },
-        subject: 'Verify your Discord account!',
-        text: `Hello! Your verification code is: ${code}.\nThis code will expire in 5 minutes!`,
-        html: `Hello! Your verification code is: <strong>${code}</strong>`,
-      };
-
-      sgMail
-        .send(msg)
-        .then(() => {}, error => {
-          console.error(error);
-      
-          if (error.response) {
-            console.error(error.response.body)
-          }
-      });
-
-      // send user DM
-      const embed = {
-        color: 0xeff624,
-        title: 'Verification',
-        description: `I've sent an email to ${email}! Please reply to this DM with the verification code. The code expires in 5 minutes.`,
-        timestamp: new Date(),
-      };
-
-      let initialDM = await user.send({ embeds: [embed] });
-
-      // wait for user to reply with code
-
-      let message = user.awaitMessages({ filter, max: 1, time: 300000, errors: ['time'] })
-      .then(collected => {
-        const message = collected.first();
-        return message
-        })
-      .catch(collected => {
-        user.send('Your time expired. Please try again later!');
-        return false;
-      });
-
-      console.log(message);
-
-      if (message != false) return;
-
-      // check if code is valid
-      const messageCode = message.content;
-
-      if (messageCode === code) {
-        // add user to array
-        const newUser = {
-          id: id,
-          email: email,
-          id: id,
-        };
-        emailsDatabase.push(newUser);
-        fs.writeFileSync('./emails.json', JSON.stringify(emailsDatabase));
-
-        // send verification message
-        const embed = {
-          color: 0xeff624,
-          title: 'Verification',
-          description: `**${user.tag}** has been verified!`,
-          timestamp: new Date(),
-        };
-
-        await user.send({ embeds: [embed] });
+    
+    function validateBUSDEmail(email) {
+      if (/berkeley.net\s*$/.test(email)) {
+      return true;
       } else {
-        user.send('Code invalid, please try again later!');
+      return false;
       };
-    } else {
-      // send verification message
+    };
+
+    var emailOption = interaction.options.get('email');
+    var email = emailOption.value;
+
+    if (interaction.channel.id !== '787039874384396329') {
       const embed = {
         color: 0xeff624,
         title: 'Verification',
         description: `You are already verified!`,
         timestamp: new Date(),
       };
-
-      await interaction.reply({content: { embeds: [embed] }, ephemeral: true});
-
-      user.roles.add('762720121205555220');
+      await interaction.reply({embeds: [embed],  ephemeral: true });
+      return;
     };
+
+    // validate email
+    if (!validateEmail(email)) {
+      const embed = {
+        color: 0xeff624,
+        title: 'Verification',
+        description: `Invalid email!`,
+        timestamp: new Date(),
+      };
+      await interaction.reply({embeds: [embed],  ephemeral: true });
+      return;
+    };
+
+    // validate BUSDEmail
+    if (!validateBUSDEmail(email)) {
+      const embed = {
+        color: 0xeff624,
+        title: 'Verification',
+        description: 'Please use your `berkeley.net` email!',
+        timestamp: new Date(),
+      };
+      await interaction.reply({embeds: [embed],  ephemeral: true });
+      return;
+    };
+
+    // check if email is a student or teacher!
+
+    var emailDomain = email.split('@')[1];
+    if (emailDomain == 'berkeley.net') {
+      var role = '765670230747381790'
+    } else  {
+      var role = '76272012120555522';
+    };
+
+    // get database
+    var emailsJSON = fs.readFileSync('./emails.json', 'utf8');
+    var emailsDatabase = JSON.parse(emailsJSON);
+
+    // check if email is in database
+    console.log(emailsDatabase);
+
+    for (var i = 0; i < emailsDatabase.length; i++) {
+      if (emailsDatabase[i].email === email) {
+        console.log(`${email} is in the database`);
+        const embed = {
+          color: 0xeff624,
+          title: 'Verification',
+          description: `This email is already verified!`,
+          timestamp: new Date(),
+        };
+        await interaction.reply({embeds: [embed],  ephemeral: true });
+        return;
+      };
+    };
+
+
+    // chec if id is in database
+    for (var i = 0; i < emailsDatabase.length; i++) {
+      if (emailsDatabase[i].id === user.id) {
+        console.log(`${user.id} is in the database`);
+        const embed = {
+          color: 0xeff624,
+          title: 'Verification',
+          description: `You are already verified!`,
+          timestamp: new Date(),
+        };
+        await interaction.reply({embeds: [embed],  ephemeral: true });
+        const member = await interaction.guild.members.fetch(user.id);
+        await member.roles.add(role);
+        return;
+      };
+    };
+
+    // send user message asking for code
+    const firstDMEmbed = {
+      color: 0xeff624,
+      title: 'Verification',
+      description: `Please enter the verification code sent to your email. If you didn't recieve the email, check your spam folder.`,
+      timestamp: new Date(),
+    };
+
+    const initialDM = await user.send({embeds: [firstDMEmbed]})
+      .catch(async (err) => {
+        console.log(err);
+        const replyEmbed = {
+          color: 0xeff624,
+          title: 'Verification',
+          description: `Please enable direct messages and re-verify.`,
+          timestamp: new Date(),
+        };
+        await interaction.reply({embeds: [replyEmbed],  ephemeral: true });
+        return;
+      });
+
+    console.timeEnd('verify');
+
+    const replyEmbed = {
+      color: 0xeff624,
+      title: 'Verification',
+      description: `Please check your direct messages to continue the verification process!`,
+      timestamp: new Date(),
+    };
+    
+    await interaction.reply({embeds: [replyEmbed],  ephemeral: true })
+
+    // send email to user
+    let code = makeid(5);
+
+    console.log(code);
+
+    const msg = {
+      to: `${email}`,
+      from: {
+          email: 'discord@bhs.eliothertenstein.com',
+          name: 'Berkeley High Discord'
+      },
+      subject: 'Verify your Discord account!',
+      text: `Hello! Your verification code is: ${code}.\nThis code will expire in 5 minutes!`,
+      html: `Hello! Your verification code is: <strong>${code}</strong>.\nThis code will expire in 5 minutes!`,
+    };
+
+    sgMail.send(msg)
+      .then(() => {}, error => {
+        console.error(error);
+    
+        if (error.response) {
+          console.error(error.response.body)
+        }
+    });
+
+    // wait for user to enter code
+
+    console.log(`Waiting for user to enter code`);
+    // console.log(initialDM);
+
+    // wait for user to enter code
+
+    initialDM.channel.awaitMessages({ max: 1, time: 300000, errors: ['time'] })
+      .then(async (messages) => {
+        const message = messages.first();
+        const userCode = message.content;
+        console.log(userCode);
+
+        // check if code is correct
+        if (userCode === code) {
+          console.log(`Code is correct`);
+          const embed = {
+            color: 0xeff624,
+            title: 'Verification',
+            description: `Your verification code was correct! You are now verified.`,
+            timestamp: new Date(),
+          };
+          await message.reply({embeds: [embed],  ephemeral: true });
+
+          // add user to database
+          const newUser = {
+            email: email,
+            id: user.id,
+          };
+
+          emailsDatabase.push(newUser);
+          console.log(emailsDatabase);
+
+          // save database
+          fs.writeFile('./emails.json', JSON.stringify(emailsDatabase), (err) => {
+            if (err) {
+              console.error(err);
+            }
+          });
+          
+          // add role to user
+
+          console.log(user);
+
+          const member = await interaction.guild.members.fetch(user.id);
+
+          await member.roles.add(role);
+
+          return;
+        } else {
+          console.log(`Code is incorrect`);
+          const embed = {
+            color: 0xeff624,
+            title: 'Verification',
+            description: `Your verification code was incorrect. Please verify again!`,
+            timestamp: new Date(),
+          };
+          const tryAgainMessage = await message.reply({embeds: [embed],  ephemeral: true });
+          return;
+        };
+
+      })
+      .catch(async (error) => {
+        console.log(error);
+        const embed = {
+          color: 0xeff624,
+          title: 'Verification',
+          description: `You took too long to reply. Please verify again!`,
+          timestamp: new Date(),
+        };
+        await initialDM.reply({embeds: [embed],  ephemeral: true });
+      });
   };
 
-  // not verify
+  // not #verify
   if (interaction.channel.id !== '787039874384396329') return;
 
   if (interaction.commandName === 'help') {    
