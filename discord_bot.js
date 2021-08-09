@@ -104,7 +104,6 @@ client.on('interactionCreate', async interaction => {
 	if (!interaction.isCommand()) return;
 
   if (interaction.commandName === 'verify') {
-    console.time('verify');
     
     const user = interaction.user;
     const guild = interaction.guild;
@@ -230,8 +229,6 @@ client.on('interactionCreate', async interaction => {
         await interaction.reply({embeds: [replyEmbed],  ephemeral: true });
         return;
       });
-
-    console.timeEnd('verify');
 
     const replyEmbed = {
       color: 0xeff624,
