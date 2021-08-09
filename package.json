@@ -4,11 +4,12 @@
   "description": "",
   "main": "discord_bot.js",
   "dependencies": {
+    "@sendgrid/mail": "^7.4.5",
     "discord.js": "^13.0.0-dev.4206e35.1626350625",
     "dotenv": "^10.0.0",
+    "google-spreadsheet": "^3.1.15",
     "xmlhttprequest": "^1.8.0"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
