@@ -60,22 +60,61 @@ client.on('messageCreate', async message => {
 	if (messageContent[0].toLowerCase() === '.deploy_slash_command' && message.author.id === client.application?.owner.id) {
 
     const data = {
-			name: 'verify',
-			description: 'Verify your discord account!',
+			name: 'user',
+			description: 'Manage a guild member.',
       options: [
         {
-        name: 'email',
-        type: 'STRING',
-        description: `Your berkeley.net email`,
+        name: 'user',
+        type: 'USER',
+        description: `A guild member`,
         required: true
-        }                      
+        },
+        {
+          name: 'action',
+          type: 'STRING',
+          description: `Action to preform on the user`,
+          required: true,
+          choices: [
+            {
+              name: 'Un-Verify Student',
+              value: 'unverify',
+            },
+            {
+              name: 'Verify Student',
+              value: 'verify',
+            },
+            {
+              name: 'Get Email',
+              value: 'getemail',
+            },
+          ],
+        }                
       ]
 		};
 
 		const command = await client.guilds.cache.get(message.guild.id)?.commands.create(data);
 		console.log(command);
     message.reply(`Deployed your Slash Command`);
-	}
+	};
+
+  if (messageContent[0].toLowerCase() === '.list_slash_commands' && message.author.id === client.application?.owner.id) {
+    const commands = await client.guilds.cache.get(message.guild.id)?.commands.fetch();
+    console.log(commands);
+    message.reply(`Listed commands in console.log`);
+  };
+  
+	if (message.content.toLowerCase() === '.slash_command_perms' && message.author.id === client.application?.owner.id) {
+		const command = await client.guilds.cache.get('762412666521124866')?.commands.fetch('874412490740625418');
+		const permissions = [
+			{
+				id: '762901377055588363',
+				type: 'ROLE',
+				permission: true,
+			},
+		];
+
+		await command.permissions.add({ permissions });
+	};
 
   if (messageContent[0].toLowerCase() === '.studyroom' && message.author.id === client.application?.owner.id) {
     const embed = {
@@ -86,7 +125,7 @@ client.on('messageCreate', async message => {
     };
     
     message.reply({ embeds: [embed] });
-	}
+	};
 
   if (messageContent[0].toLowerCase() === '.help' && message.author.id === client.application?.owner.id) {
     const embed = {
@@ -167,8 +206,10 @@ client.on('interactionCreate', async interaction => {
     if (emailDomain == 'berkeley.net') {
       var role = '765670230747381790'
     } else  {
-      var role = '76272012120555522';
+      var role = '762720121205555220';
     };
+
+    console.log(role);
 
     // get database
     var emailsJSON = fs.readFileSync('./emails.json', 'utf8');
@@ -291,7 +332,7 @@ client.on('interactionCreate', async interaction => {
           // add user to database
           const newUser = {
             email: email,
-            id: user.id,
+            id: parseInt(user.id),
           };
 
           emailsDatabase.push(newUser);
@@ -336,6 +377,96 @@ client.on('interactionCreate', async interaction => {
         };
         await initialDM.reply({embeds: [embed],  ephemeral: true });
       });
+  };
+
+  if (interaction.commandName === 'user') {    
+    const userOption = interaction.options.get('user');
+    const user = userOption.user;
+    const member = userOption.member;
+    const actionOption = interaction.options.get('action');
+    const author = interaction.user;
+    action = actionOption.value;
+    console.log(user);
+
+    // load database
+    const emailsDatabase = JSON.parse(fs.readFileSync('./emails.json', 'utf8'));
+
+    if (action === 'unverify') {
+      member.roles.remove('762720121205555220');
+
+      const embed = {
+        color: 0xeff624,
+        title: 'User Unverified',
+        description: `${user.tag} is no longer verified.`,
+        timestamp: new Date(),
+      };
+      
+      // remove user from database
+      emailsDatabase.forEach((object, index) => {
+        if (object.id === user.id) {
+          emailsDatabase.splice(index, 1);
+        };
+      });
+
+      // save database
+      fs.writeFile('./emails.json', JSON.stringify(emailsDatabase), (err) => {
+        if (err) {
+          console.error(err);
+        }
+      });
+
+      await interaction.reply({embeds: [embed],  ephemeral: true });
+    };
+
+    if (action == 'verify') {
+      // add role to student
+      member.roles.add('762720121205555220');
+
+      // add student to database
+      const newUser = {
+        email: `Manually Verified by ${author.tag}`,
+        id: parseInt(user.id),
+      };
+      emailsDatabase.push(newUser);
+
+      // save database
+      fs.writeFile('./emails.json', JSON.stringify(emailsDatabase), (err) => {
+        if (err) {
+          console.error(err);
+        }
+      });
+
+      const embed = {
+        color: 0xeff624,
+        title: 'User Verified',
+        description: `${user.tag} is now verified.`,
+        timestamp: new Date(),
+      };
+      await interaction.reply({embeds: [embed],  ephemeral: true });
+    };
+
+    if (action === 'getemail') {
+      // find email by id in database
+      const email = emailsDatabase.find(object => object.id === parseInt(user.id));
+      if (email) {
+        console.log(email);
+        const embed = {
+          color: 0xeff624,
+          title: 'User Email',
+          description: `**${user.tag}**'s email is **${email.email}**.`,
+          timestamp: new Date(),
+        };
+        await interaction.reply({embeds: [embed],  ephemeral: true });
+      } else {
+        const embed = {
+          color: 0xeff624,
+          title: 'User Email',
+          description: `${user.tag} has not been verified.`,
+          timestamp: new Date(),
+        };
+        await interaction.reply({embeds: [embed],  ephemeral: true });
+      };
+    };
   };
 
   // not #verify
