@@ -60,60 +60,105 @@ client.on('messageCreate', async message => {
 	if (messageContent[0].toLowerCase() === '.deploy_slash_command' && message.author.id === client.application?.owner.id) {
 
     const data = {
-			name: 'user',
-			description: 'Manage a guild member.',
-      options: [
-        {
-        name: 'user',
-        type: 'USER',
-        description: `A guild member`,
-        required: true
-        },
-        {
-          name: 'action',
-          type: 'STRING',
-          description: `Action to preform on the user`,
-          required: true,
-          choices: [
-            {
-              name: 'Un-Verify Student',
-              value: 'unverify',
-            },
-            {
-              name: 'Verify Student',
-              value: 'verify',
-            },
-            {
-              name: 'Get Email',
-              value: 'getemail',
-            },
-          ],
-        }                
-      ]
+			name: 'archive',
+			description: 'Archive the current channel',
+      // options: [
+      //   {
+      //   name: 'user',
+      //   type: 'USER',
+      //   description: `A guild member`,
+      //   required: true
+      //   },
+      //   {
+      //     name: 'action',
+      //     type: 'STRING',
+      //     description: `Action to preform on the user`,
+      //     required: true,
+      //     choices: [
+      //       {
+      //         name: 'Un-Verify Student',
+      //         value: 'unverify',
+      //       },
+      //       {
+      //         name: 'Verify Student',
+      //         value: 'verify',
+      //       },
+      //       {
+      //         name: 'Get Email',
+      //         value: 'getemail',
+      //       },
+      //     ],
+      //   }                
+      // ]
 		};
 
 		const command = await client.guilds.cache.get(message.guild.id)?.commands.create(data);
 		console.log(command);
-    message.reply(`Deployed your Slash Command`);
+    message.reply(`Deployed your Slash Command: ${command.name}`);
 	};
 
-  if (messageContent[0].toLowerCase() === '.list_slash_commands' && message.author.id === client.application?.owner.id) {
+  if (messageContent[0].toLowerCase() === '.slash_command_id' && message.author.id === client.application?.owner.id) {
+    if (messageContent.length < 2) {
+      message.reply('Please use the following format: `.slash_command_id <command name>`');
+      return;
+    };
+
     const commands = await client.guilds.cache.get(message.guild.id)?.commands.fetch();
-    console.log(commands);
-    message.reply(`Listed commands in console.log`);
+
+    // convert commands to array
+    const commandArray = [...commands.entries()];
+    console.log(commandArray);
+    // find the command using the name
+    const command = commandArray.find(command => command[1].name === messageContent[1]);
+
+    console.log(command);
+
+    // if command is not found reply with error
+
+    if (command === undefined) {
+      message.reply('Command not found');
+      return;
+    };
+    
+    message.reply("Slash Command ID: `" + command[0] + "`");
   };
   
-	if (message.content.toLowerCase() === '.slash_command_perms' && message.author.id === client.application?.owner.id) {
-		const command = await client.guilds.cache.get('762412666521124866')?.commands.fetch('874412490740625418');
+	if (message.content.startsWith('.slash_command_perms') && message.author.id === client.application?.owner.id) {
+    const args = message.content.trim().split(' ');
+
+    console.log(args);
+
+    // check length of args
+    if (args.length < 4) {
+      message.reply('Please use the following format: `.slash_command_perms <command id> <true/false> <role id>`');
+      return;
+    };
+
+
+    try {
+    var commandId = args[1];
+    var permissionString = args[2];
+    var permission = (permissionString === 'true');
+    var role = args[3];
+    } catch (e) {
+      message.reply('Please use the following format: `.slash_command_perms <command id> <true/false> <role id>`');
+      return;
+    };
+
+		const command = await client.guilds.cache.get('762412666521124866')?.commands.fetch(commandId);
 		const permissions = [
 			{
-				id: '762901377055588363',
+				id: role,
 				type: 'ROLE',
-				permission: true,
+				permission: permission,
 			},
 		];
 
-		await command.permissions.add({ permissions });
+		await command.permissions.add({ permissions })
+    .catch(err => {
+      message.reply('Please use the following format: `.slash_command_perms <command id> <true/false> <role id>`');
+      return;
+    });
 	};
 
   if (messageContent[0].toLowerCase() === '.studyroom' && message.author.id === client.application?.owner.id) {
@@ -467,6 +512,26 @@ client.on('interactionCreate', async interaction => {
         await interaction.reply({embeds: [embed],  ephemeral: true });
       };
     };
+  };
+
+  if (interaction.commandName === 'archive') {
+    const channel = interaction.channel;
+    const author = interaction.user;
+
+    const embed = {
+      color: 0xeff624,
+      title: 'Channel Archived',
+      description: `${channel.name} has been archived due to inactivity`,
+      timestamp: new Date(),
+      footer: {
+        text: `Message ${author.tag} to appeal`
+      }
+    };
+    await interaction.reply({embeds: [embed],  ephemeral: false });
+
+    // archive channel
+
+    await interaction.channel.setParent('819750695380975616', { lockPermissions: true });
   };
 
   // not #verify
