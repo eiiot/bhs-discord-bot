@@ -60,8 +60,8 @@ client.on('messageCreate', async message => {
 	if (messageContent[0].toLowerCase() === '.deploy_slash_command' && message.author.id === client.application?.owner.id) {
 
     const data = {
-			name: 'archive',
-			description: 'Archive the current channel',
+			name: 'map',
+			description: 'Display a map of Berkeley High',
       // options: [
       //   {
       //   name: 'user',
@@ -534,8 +534,8 @@ client.on('interactionCreate', async interaction => {
     await interaction.channel.setParent('819750695380975616', { lockPermissions: true });
   };
 
-  // not #verify
-  if (interaction.channel.id !== '787039874384396329') return;
+  // make sure slash command is not in #verify
+  if (interaction.channel.id == '787039874384396329') return;
 
   if (interaction.commandName === 'help') {    
     const helpEmbed = {
@@ -591,6 +591,19 @@ client.on('interactionCreate', async interaction => {
       timestamp: new Date(),
     };
 
+    await interaction.reply({ embeds: [embed] });
+  };
+
+  if (interaction.commandName === 'map') {
+    const embed = {
+      color: 0xeff624,
+      author : {
+        name: 'Created by Eliot',
+      },
+      url: 'https://www.bhsmap.com',
+      title: 'Berkeley High Map',
+      description: `An interactive map of Berkeley High is available at the link above!`,
+    };
     await interaction.reply({ embeds: [embed] });
   };
 });
