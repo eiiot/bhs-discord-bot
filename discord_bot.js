@@ -596,12 +596,12 @@ client.on('interactionCreate', async interaction => {
   if (interaction.commandName === 'map') {
     const embed = {
       color: 0xeff624,
-      author : {
-        name: 'Created by Eliot',
-      },
       url: 'https://www.bhsmap.com',
       title: 'Berkeley High Map',
       description: `An interactive map of Berkeley High is available at the link above!`,
+      footer: {
+        text: 'Created by Eliot'
+      }
     };
     await interaction.reply({ embeds: [embed] });
   };
