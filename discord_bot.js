@@ -1,7 +1,6 @@
 const Discord = require('discord.js');
 const dotenv = require('dotenv');
 const sgMail = require('@sendgrid/mail');
-const { GoogleSpreadsheet } = require('google-spreadsheet');
 const fs = require('fs');
 const client = new Discord.Client({
     intents: [
