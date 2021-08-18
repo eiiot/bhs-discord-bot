@@ -59,36 +59,36 @@ client.on('messageCreate', async message => {
 	if (messageContent[0].toLowerCase() === '.deploy_slash_command' && message.author.id === client.application?.owner.id) {
 
     const data = {
-			name: 'map',
-			description: 'Display a map of Berkeley High',
-      // options: [
-      //   {
-      //   name: 'user',
-      //   type: 'USER',
-      //   description: `A guild member`,
-      //   required: true
-      //   },
-      //   {
-      //     name: 'action',
-      //     type: 'STRING',
-      //     description: `Action to preform on the user`,
-      //     required: true,
-      //     choices: [
-      //       {
-      //         name: 'Un-Verify Student',
-      //         value: 'unverify',
-      //       },
-      //       {
-      //         name: 'Verify Student',
-      //         value: 'verify',
-      //       },
-      //       {
-      //         name: 'Get Email',
-      //         value: 'getemail',
-      //       },
-      //     ],
-      //   }                
-      // ]
+			name: 'user',
+			description: 'Manage a guild member',
+      options: [
+        {
+        name: 'user',
+        type: 'USER',
+        description: `A guild member`,
+        required: true
+        },
+        {
+          name: 'action',
+          type: 'STRING',
+          description: `Action to preform on the user`,
+          required: true,
+          choices: [
+            {
+              name: 'Un-Verify Student',
+              value: 'unverify',
+            },
+            {
+              name: 'Verify Student',
+              value: 'verify',
+            },
+            {
+              name: 'Get Info',
+              value: 'getinfo',
+            },
+          ],
+        }                
+      ]
 		};
 
 		const command = await client.guilds.cache.get(message.guild.id)?.commands.create(data);
@@ -160,7 +160,7 @@ client.on('messageCreate', async message => {
     });
 	};
 
-  if (messageContent[0].toLowerCase() === '.studyroom' && message.author.id === client.application?.owner.id) {
+  if (messageContent[0].toLowerCase() === '.studyroom') {
     const embed = {
       color: 0xeff624,
       title: 'My Commands Have Moved!',
@@ -171,7 +171,7 @@ client.on('messageCreate', async message => {
     message.reply({ embeds: [embed] });
 	};
 
-  if (messageContent[0].toLowerCase() === '.help' && message.author.id === client.application?.owner.id) {
+  if (messageContent[0].toLowerCase() === '.help') {
     const embed = {
       color: 0xeff624,
       title: 'My Commands Have Moved!',
@@ -180,7 +180,18 @@ client.on('messageCreate', async message => {
     };
     
     message.reply({ embeds: [embed] });
-	}
+	};
+
+  if (messageContent[0].toLowerCase() === '.test_command_42' && message.author.id === client.application?.owner.id) {
+    const embed = {
+      color: 0xeff624,
+      title: 'Wowowowowowowo test command',
+      description: `This doesn't do anything yet`,
+      timestamp: new Date(),
+    };
+
+    message.reply({ embeds: [embed] });
+  };
 });
 
 client.on('interactionCreate', async interaction => {
@@ -377,6 +388,7 @@ client.on('interactionCreate', async interaction => {
           const newUser = {
             email: email,
             id: parseInt(user.id),
+            date: new Date(),
           };
 
           emailsDatabase.push(newUser);
@@ -396,6 +408,19 @@ client.on('interactionCreate', async interaction => {
           const member = await interaction.guild.members.fetch(user.id);
 
           await member.roles.add(role);
+
+          // log user verified
+
+          const logEmbed = {
+            color: 0xeff624,
+            title: 'Verification',
+            description: `<@${user.id}> was verified!`,
+            timestamp: new Date(),
+          };
+
+          const adminChannel = await interaction.guild.channels.fetch('877376896311132210');
+          
+          await adminChannel.send({embeds: [logEmbed]});
 
           return;
         } else {
@@ -430,12 +455,23 @@ client.on('interactionCreate', async interaction => {
     const actionOption = interaction.options.get('action');
     const author = interaction.user;
     action = actionOption.value;
-    console.log(user);
 
     // load database
     const emailsDatabase = JSON.parse(fs.readFileSync('./emails.json', 'utf8'));
 
     if (action === 'unverify') {
+      if (!member.roles.cache.some(role => role.id === '762720121205555220')) {
+        const embed = {
+          color: 0xeff624,
+          title: 'Verification',
+          description: `User is not verified.`,
+          timestamp: new Date(),
+        };
+        await interaction.reply({embeds: [embed],  ephemeral: true });
+        return;
+      };
+
+
       member.roles.remove('762720121205555220');
 
       const embed = {
@@ -444,13 +480,18 @@ client.on('interactionCreate', async interaction => {
         description: `${user.tag} is no longer verified.`,
         timestamp: new Date(),
       };
+
+      console.log(user.id);
       
       // remove user from database
-      emailsDatabase.forEach((object, index) => {
-        if (object.id === user.id) {
-          emailsDatabase.splice(index, 1);
+      for (var i = 0; i < emailsDatabase.length; i++) {
+        if (emailsDatabase[i].id == user.id) {
+            emailsDatabase.splice(i, 1);
+            break;
         };
-      });
+      };
+
+      console.log(emailsDatabase);
 
       // save database
       fs.writeFile('./emails.json', JSON.stringify(emailsDatabase), (err) => {
@@ -470,6 +511,7 @@ client.on('interactionCreate', async interaction => {
       const newUser = {
         email: `Manually Verified by ${author.tag}`,
         id: parseInt(user.id),
+        date: new Date(),
       };
       emailsDatabase.push(newUser);
 
@@ -489,15 +531,27 @@ client.on('interactionCreate', async interaction => {
       await interaction.reply({embeds: [embed],  ephemeral: true });
     };
 
-    if (action === 'getemail') {
+    if (action === 'getinfo') {
       // find email by id in database
       const email = emailsDatabase.find(object => object.id === parseInt(user.id));
+      if (email === undefined) {
+        const embed = {
+          color: 0xeff624,
+          title: 'User Info',
+          description: `${user.tag} is not verified.`,
+          timestamp: new Date(),
+        };
+        await interaction.reply({embeds: [embed],  ephemeral: true });
+        return;
+      };
+      console.log(email);
+      const date = new Date(email.date);
       if (email) {
         console.log(email);
         const embed = {
           color: 0xeff624,
           title: 'User Email',
-          description: `**${user.tag}**'s email is **${email.email}**.`,
+          description: `**${user.tag}**'s email is **${email.email}**.\nUser was first verified on **${date.toString()}**`,
           timestamp: new Date(),
         };
         await interaction.reply({embeds: [embed],  ephemeral: true });
@@ -553,6 +607,9 @@ client.on('interactionCreate', async interaction => {
   if (interaction.commandName === 'studyroom') {    
     var users = interaction.options.get('users');
     var guild = interaction.guild;
+    var member = await guild.members.fetch(interaction.user.id);
+
+    console.log(member);
 
     console.log(users);
     // create a new voice channel
@@ -562,14 +619,14 @@ client.on('interactionCreate', async interaction => {
 
     async function createChannel() {
       if (users === undefined) {
-        const channel = await guild.channels.create(`${interaction.user.username}'s Study Room`, {
+        const channel = await guild.channels.create(`${member.nickname}'s Study Room`, {
           type: 'GUILD_VOICE',
           topic: `Created by ${interaction.user.username}`,
           parent: '762757482274881536',
         })
         return channel;
       } else {
-        const channel = await guild.channels.create(`${interaction.user.username}'s Study Room`, {
+        const channel = await guild.channels.create(`${member.nickname}'s Study Room`, {
           type: 'GUILD_VOICE',
           topic: `Created by ${interaction.user.username}`,
           parent: '762757482274881536',
