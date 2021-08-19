@@ -637,13 +637,23 @@ client.on('interactionCreate', async interaction => {
       const date = new Date(email.date);
       if (email) {
         console.log(email);
-        const embed = {
-          color: 0xeff624,
-          title: 'User Email',
-          description: `**${user.tag}**'s email is **${email.email}**.\nUser was first verified on **${date.toString()}**`,
-          timestamp: new Date(),
+        if (date !== undefined) {
+          const embed = {
+            color: 0xeff624,
+            title: 'User Email',
+            description: `**${user.tag}**'s email is **${email.email}**.\nUser was first verified on **${date.toString()}**`,
+            timestamp: new Date(),
+          };
+          await interaction.reply({embeds: [embed],  ephemeral: true });
+        } else {
+          const embed = {
+            color: 0xeff624,
+            title: 'User Email',
+            description: `**${user.tag}**'s email is **${email.email}**.\nDate is unavailable.`,
+            timestamp: new Date(),
+          };
+          await interaction.reply({embeds: [embed],  ephemeral: true });
         };
-        await interaction.reply({embeds: [embed],  ephemeral: true });
       } else {
         const embed = {
           color: 0xeff624,
