@@ -84,11 +84,11 @@ client.on('messageCreate', async message => {
           required: true,
           choices: [
             {
-              name: 'Un-Verify Student',
+              name: 'Un-Verify',
               value: 'unverify',
             },
             {
-              name: 'Verify Student',
+              name: 'Verify',
               value: 'verify',
             },
             {
@@ -271,7 +271,9 @@ client.on('interactionCreate', async interaction => {
 
     var emailDomain = email.split('@')[1];
     if (emailDomain == 'berkeley.net') {
-      var role = '765670230747381790'
+      var role = '765670230747381790';
+      var role2 = '762720121205555220';
+      var twoRoles = true;
     } else  {
       var role = '762720121205555220';
     };
@@ -421,6 +423,13 @@ client.on('interactionCreate', async interaction => {
 
           await member.roles.add(role);
 
+          console.log(twoRoles);
+          console.log(role2);
+
+          if (twoRoles) {
+            await member.roles.add(role2);
+          };
+
           // log user verified
 
           const logEmbed = {
@@ -473,14 +482,25 @@ client.on('interactionCreate', async interaction => {
 
     if (action === 'unverify') {
       if (!member.roles.cache.some(role => role.id === '762720121205555220')) {
-        const embed = {
-          color: 0xeff624,
-          title: 'Verification',
-          description: `${user.tag} is not verified.`,
-          timestamp: new Date(),
+        if (!member.roles.cache.some(role => role.id === '765670230747381790')) {
+          const embed = {
+            color: 0xeff624,
+            title: 'Verification',
+            description: `${user.tag} is not verified.`,
+            timestamp: new Date(),
+          };
+          await interaction.reply({embeds: [embed],  ephemeral: true });
+          return;
+        } else {
+          const embed = {
+            color: 0xeff624,
+            title: 'Verification',
+            description: `${user.tag} is a teacher. Removing two roles.`,
+            timestamp: new Date(),
+          };
+          await interaction.reply({embeds: [embed],  ephemeral: true });
+          member.roles.remove('765670230747381790');
         };
-        await interaction.reply({embeds: [embed],  ephemeral: true });
-        return;
       };
 
 
@@ -553,7 +573,7 @@ client.on('interactionCreate', async interaction => {
       const verifyEmbed = {
           color: 0xeff624,
           title: 'Verification',
-          description: `Your verification code was correct!\nPlease change your nickname to your real first name using \`/nick {name}\`.\nThanks!`,
+          description: `You have been verified!\nPlease change your nickname to your real first name using \`/nick {name}\`.\nThanks!`,
           timestamp: new Date(),
       };
       await user.send({embeds: [verifyEmbed]});
@@ -564,14 +584,16 @@ client.on('interactionCreate', async interaction => {
       const email = emailsDatabase.find(object => object.id === parseInt(user.id));
 
       if (!member.roles.cache.some(role => role.id === '762720121205555220')) {
-        const embed = {
-          color: 0xeff624,
-          title: 'Verification',
-          description: `${user.tag} is not verified.`,
-          timestamp: new Date(),
+        if (!member.roles.cache.some(role => role.id === '765670230747381790')) {
+          const embed = {
+            color: 0xeff624,
+            title: 'Verification',
+            description: `${user.tag} is not verified.`,
+            timestamp: new Date(),
+          };
+          await interaction.reply({embeds: [embed],  ephemeral: true });
+          return;
         };
-        await interaction.reply({embeds: [embed],  ephemeral: true });
-        return;
       };
 
       if (email === undefined) {
