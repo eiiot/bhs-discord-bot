@@ -391,7 +391,7 @@ client.on('interactionCreate', async interaction => {
           const embed = {
             color: 0xeff624,
             title: 'Verification',
-            description: `Your verification code was correct!\nPlease change your nickname to your real first name using \`/nick {name}\`. Thanks!`,
+            description: `Your verification code was correct!\nPlease change your nickname to your real first name using \`/nick {name}\`.\nThanks!`,
             timestamp: new Date(),
           };
           await message.reply({embeds: [embed],  ephemeral: true });
@@ -509,7 +509,15 @@ client.on('interactionCreate', async interaction => {
       fs.writeFile('./emails.json', JSON.stringify(emailsDatabase), (err) => {
         if (err) {
           console.error(err);
-        }
+        };
+
+      const unverifyEmbed = {
+        color: 0xeff624,
+        title: 'You are no longer verified',
+        description: `Please message <@434013914091487232> if you believe this was a mistake.`,
+        timestamp: new Date(),
+      };
+      await user.send({embeds: [unverifyEmbed]});
       });
 
       await interaction.reply({embeds: [embed],  ephemeral: true });
@@ -541,6 +549,14 @@ client.on('interactionCreate', async interaction => {
         timestamp: new Date(),
       };
       await interaction.reply({embeds: [embed],  ephemeral: true });
+
+      const verifyEmbed = {
+          color: 0xeff624,
+          title: 'Verification',
+          description: `Your verification code was correct!\nPlease change your nickname to your real first name using \`/nick {name}\`.\nThanks!`,
+          timestamp: new Date(),
+      };
+      await user.send({embeds: [verifyEmbed]});
     };
 
     if (action === 'getinfo') {
