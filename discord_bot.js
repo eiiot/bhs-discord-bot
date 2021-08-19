@@ -48,7 +48,16 @@ client.on('ready', () => {
   client.user.setActivity(`Helping BHS Students!`, { type: "PLAYING"});
 });
 
-// client.on('debug', console.log);
+client.on('guildMemberAdd', async member => {
+  const embed = {
+    color: 0xeff624,
+    title: 'Welcome to the BHS Discord!',
+    description: 'Please verify in <#787039874384396329> using \`/verify {email}\` to gain access to the server.\nAlso be sure to famaliarize yourself with the rules in <#838236356336943134>.\nThanks, and welcome!',
+    timestamp: new Date(),
+  };
+
+  member.send({ embeds: [embed] });
+});
 
 // bot owner commands
 client.on('messageCreate', async message => {
@@ -183,14 +192,17 @@ client.on('messageCreate', async message => {
 	};
 
   if (messageContent[0].toLowerCase() === '.test_command_42' && message.author.id === client.application?.owner.id) {
+    const user = message.author;
+    const member = await message.guild.members.fetch(user.id);
+
     const embed = {
       color: 0xeff624,
-      title: 'Wowowowowowowo test command',
-      description: `This doesn't do anything yet`,
+      title: `Welcome to the BHS Discord!`,
+      description: 'Please verify in <#787039874384396329> using \`/verify {email}\` to gain access to the server.\nAlso be sure to famaliarize yourself with the rules in <#838236356336943134>.\nThanks, and welcome!',
       timestamp: new Date(),
     };
-
-    message.reply({ embeds: [embed] });
+  
+    member.send({ embeds: [embed] });
   };
 });
 
@@ -218,7 +230,7 @@ client.on('interactionCreate', async interaction => {
     };
 
     var emailOption = interaction.options.get('email');
-    var email = emailOption.value;
+    var email = emailOption.value.toLowerCase();
 
     if (interaction.channel.id !== '787039874384396329') {
       const embed = {
