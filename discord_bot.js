@@ -493,6 +493,8 @@ client.on('interactionCreate', async interaction => {
         timestamp: new Date(),
       };
 
+      await interaction.reply({embeds: [embed],  ephemeral: true });
+
       console.log(user.id);
       
       // remove user from database
@@ -518,9 +520,7 @@ client.on('interactionCreate', async interaction => {
         timestamp: new Date(),
       };
       await user.send({embeds: [unverifyEmbed]});
-      });
-
-      await interaction.reply({embeds: [embed],  ephemeral: true });
+    });
     };
 
     if (action == 'verify') {
