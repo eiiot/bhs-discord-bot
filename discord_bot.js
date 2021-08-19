@@ -476,7 +476,7 @@ client.on('interactionCreate', async interaction => {
         const embed = {
           color: 0xeff624,
           title: 'Verification',
-          description: `User is not verified.`,
+          description: `${user.tag} is not verified.`,
           timestamp: new Date(),
         };
         await interaction.reply({embeds: [embed],  ephemeral: true });
@@ -546,11 +546,23 @@ client.on('interactionCreate', async interaction => {
     if (action === 'getinfo') {
       // find email by id in database
       const email = emailsDatabase.find(object => object.id === parseInt(user.id));
+
+      if (!member.roles.cache.some(role => role.id === '762720121205555220')) {
+        const embed = {
+          color: 0xeff624,
+          title: 'Verification',
+          description: `${user.tag} is not verified.`,
+          timestamp: new Date(),
+        };
+        await interaction.reply({embeds: [embed],  ephemeral: true });
+        return;
+      };
+
       if (email === undefined) {
         const embed = {
           color: 0xeff624,
           title: 'User Info',
-          description: `${user.tag} is not verified.`,
+          description: `${user.tag} does not exist in the database.`,
           timestamp: new Date(),
         };
         await interaction.reply({embeds: [embed],  ephemeral: true });
