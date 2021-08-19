@@ -512,6 +512,7 @@ client.on('interactionCreate', async interaction => {
         if (err) {
           console.error(err);
         };
+      });
 
       const unverifyEmbed = {
         color: 0xeff624,
@@ -520,7 +521,6 @@ client.on('interactionCreate', async interaction => {
         timestamp: new Date(),
       };
       await user.send({embeds: [unverifyEmbed]});
-    });
     };
 
     if (action == 'verify') {
