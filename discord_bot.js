@@ -401,7 +401,7 @@ client.on('interactionCreate', async interaction => {
           // add user to database
           const newUser = {
             email: email,
-            id: parseInt(user.id),
+            id: user.id,
             date: new Date(),
           };
 
@@ -490,6 +490,27 @@ client.on('interactionCreate', async interaction => {
             timestamp: new Date(),
           };
           await interaction.reply({embeds: [embed],  ephemeral: true });
+
+          console.log(user.id);
+
+          console.log(user.id);
+
+          for (var i = 0; i < emailsDatabase.length; i++) {
+            if (emailsDatabase[i].id == user.id) {
+                console.log('splicing');
+                emailsDatabase.splice(i, 1);
+            };
+          };
+
+          console.log(emailsDatabase);
+
+          // save database
+          fs.writeFile('./emails.json', JSON.stringify(emailsDatabase), (err) => {
+            if (err) {
+              console.error(err);
+            }
+          });
+
           return;
         } else {
           const embed = {
@@ -516,6 +537,12 @@ client.on('interactionCreate', async interaction => {
       await interaction.reply({embeds: [embed],  ephemeral: true });
 
       console.log(user.id);
+
+      console.log(typeof user.id);
+
+      if (user.id === "708428880121430137") {
+        console.log('user verified');
+      };
       
       // remove user from database
       for (var i = 0; i < emailsDatabase.length; i++) {
@@ -550,7 +577,7 @@ client.on('interactionCreate', async interaction => {
       // add student to database
       const newUser = {
         email: `Manually Verified by ${author.tag}`,
-        id: parseInt(user.id),
+        id: user.id,
         date: new Date(),
       };
       emailsDatabase.push(newUser);
@@ -581,7 +608,7 @@ client.on('interactionCreate', async interaction => {
 
     if (action === 'getinfo') {
       // find email by id in database
-      const email = emailsDatabase.find(object => object.id === parseInt(user.id));
+      const email = emailsDatabase.find(object => object.id === user.id);
 
       if (!member.roles.cache.some(role => role.id === '762720121205555220')) {
         if (!member.roles.cache.some(role => role.id === '765670230747381790')) {
