@@ -379,7 +379,7 @@ client.on('interactionCreate', async interaction => {
           const embed = {
             color: 0xeff624,
             title: 'Verification',
-            description: `Your verification code was correct! You are now verified.`,
+            description: `Your verification code was correct!\nPlease change your nickname to your real first name using \`/nick {name}\`. Thanks!`,
             timestamp: new Date(),
           };
           await message.reply({embeds: [embed],  ephemeral: true });
