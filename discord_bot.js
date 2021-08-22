@@ -775,25 +775,4 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
   }
 });
 
-// get reaction
-// client.on('messageReactionAdd', async (reaction, user) => {
-//   if (reaction.message.id == '871048479139577866') {
-//     if (reaction.emoji.name == 'strava_logo') {
-//       const memberWhoReacted = await reaction.message.guild.members.fetch(user.id);
-//       memberWhoReacted.roles.add('870756385804152863');
-//       console.log(`Added role to ${user.username}`);
-//     };
-//   };
-// });
-
-// client.on('messageReactionRemove', async (reaction, user) => {
-//   if (reaction.message.id == '871048479139577866') {
-//     if (reaction.emoji.name == 'strava_logo') {
-//       const memberWhoReacted = await reaction.message.guild.members.fetch(user.id);
-//       memberWhoReacted.roles.remove('870756385804152863');
-//       console.log(`Removed role from ${user.username}`);
-//     };
-//   };
-// });
-
 client.login(process.env.BOT_TOKEN);
