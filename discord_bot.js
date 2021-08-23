@@ -191,18 +191,25 @@ client.on('messageCreate', async message => {
     message.reply({ embeds: [embed] });
 	};
 
+  if (messageContent[0].toLowerCase() === '!xp') {
+    message.reply(`It's \`!rank\` <:nathan:837570945593638924>`);
+  };
+
+  if (messageContent[0].toLowerCase() === '!leaderboard') {
+    message.reply(`It's \`!levels\` <:nathan:837570945593638924>`);
+  };
+
   if (messageContent[0].toLowerCase() === '.test_command_42' && message.author.id === client.application?.owner.id) {
     const user = message.author;
     const member = await message.guild.members.fetch(user.id);
 
     const embed = {
       color: 0xeff624,
-      title: `Welcome to the BHS Discord!`,
-      description: 'Please verify in <#787039874384396329> using \`/verify {email}\` to gain access to the server.\nAlso be sure to famaliarize yourself with the rules in <#838236356336943134>.\nThanks, and welcome!',
+      title: 'Verification',
+      description: `Your verification code was correct!\nPlease change your nickname to your real first name using \`/nick {name}\`, and get the role for your grade in <#762755217057513503>.\nThanks!`,
       timestamp: new Date(),
     };
-  
-    member.send({ embeds: [embed] });
+    await message.reply({embeds: [embed],  ephemeral: true });
   };
 });
 
@@ -393,7 +400,7 @@ client.on('interactionCreate', async interaction => {
           const embed = {
             color: 0xeff624,
             title: 'Verification',
-            description: `Your verification code was correct!\nPlease change your nickname to your real first name using \`/nick {name}\`.\nThanks!`,
+            description: `Your verification code was correct!\nPlease change your nickname to your real first name using \`/nick {name}\`, and get the role for your grade in <#762755217057513503>.\nThanks!`,
             timestamp: new Date(),
           };
           await message.reply({embeds: [embed],  ephemeral: true });
