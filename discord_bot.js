@@ -199,6 +199,17 @@ client.on('messageCreate', async message => {
     message.reply(`It's \`!levels\` <:nathan:837570945593638924>`);
   };
 
+  if (messageContent[0].toLowerCase() === ',suggest') {
+    const embed = {
+      color: 0xeff624,
+      title: 'The Suggest Command Has Moved!',
+      description: "Try using `/suggest`!",
+      timestamp: new Date(),
+    };
+    
+    message.reply({ embeds: [embed] });
+  };
+
   if (messageContent[0].toLowerCase() === '.test_command_42' && message.author.id === client.application?.owner.id) {
     const user = message.author;
     const member = await message.guild.members.fetch(user.id);
