@@ -68,34 +68,34 @@ client.on('messageCreate', async message => {
 	if (messageContent[0].toLowerCase() === '.deploy_slash_command' && message.author.id === client.application?.owner.id) {
 
     const data = {
-			name: 'user',
-			description: 'Manage a guild member',
+			name: 'suggest',
+			description: 'Create a server suggestion!',
       options: [
         {
-        name: 'user',
-        type: 'USER',
-        description: `A guild member`,
+        name: 'suggestion',
+        type: 'STRING',
+        description: `Your suggestion`,
         required: true
-        },
-        {
-          name: 'action',
-          type: 'STRING',
-          description: `Action to preform on the user`,
-          required: true,
-          choices: [
-            {
-              name: 'Un-Verify',
-              value: 'unverify',
-            },
-            {
-              name: 'Verify',
-              value: 'verify',
-            },
-            {
-              name: 'Get Info',
-              value: 'getinfo',
-            },
-          ],
+        // },
+        // {
+        //   name: 'action',
+        //   type: 'STRING',
+        //   description: `Action to preform on the user`,
+        //   required: true,
+        //   choices: [
+        //     {
+        //       name: 'Un-Verify',
+        //       value: 'unverify',
+        //     },
+        //     {
+        //       name: 'Verify',
+        //       value: 'verify',
+        //     },
+        //     {
+        //       name: 'Get Info',
+        //       value: 'getinfo',
+        //     },
+        //   ],
         }                
       ]
 		};
@@ -210,6 +210,28 @@ client.on('messageCreate', async message => {
       timestamp: new Date(),
     };
     await message.reply({embeds: [embed],  ephemeral: true });
+  };
+
+  if (message.channel.id === '879374919459303455' && !message.author.bot) {
+    const member = await message.guild.members.fetch(message.author.id);
+
+    const embed = {
+      color: 0xeff624,
+      author: {
+        name: member.nickname,
+        icon_url: message.author.avatarURL(),
+      },
+      title: 'Lecture Suggestion',
+      description: message.content,
+      timestamp: new Date(),
+    };
+    
+    const replacedMessage = await message.channel.send({embeds: [embed]});
+
+    message.delete();
+
+    replacedMessage.react(message.guild.emojis.cache.get('879376341613568040'));
+    replacedMessage.react(message.guild.emojis.cache.get('879376341630341150'));
   };
 });
 
@@ -768,6 +790,38 @@ client.on('interactionCreate', async interaction => {
     };
     await interaction.reply({ embeds: [embed] });
   };
+
+  if (interaction.commandName === 'suggest') {
+    var suggestion = interaction.options.get('suggestion').value;
+
+    const member = await interaction.guild.members.fetch(interaction.user.id);
+
+    const embed = {
+      color: 0xeff624,
+      thumbnail: {
+        url: interaction.user.avatarURL(),
+      },
+      title: member.nickname,
+      description: suggestion,
+      timestamp: new Date(),
+    };
+
+    const channel = await interaction.guild.channels.fetch('839965498291519538');
+    
+    const suggestionMsg = await channel.send({embeds: [embed]});
+
+    suggestionMsg.react(interaction.guild.emojis.cache.get('879376341613568040'));
+    suggestionMsg.react(interaction.guild.emojis.cache.get('879376341630341150'));
+
+    const replyEmbed = {
+      color: 0xeff624,
+      title: 'Suggestion Submitted!',
+      description: `Your suggestion has been submitted! You can view it in <#839965498291519538>`,
+      timestamp: new Date(),
+    };
+
+    interaction.reply({ embeds: [replyEmbed] });
+  }
 });
 
 // delete empty voice channels in a catagory
