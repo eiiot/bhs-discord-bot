@@ -225,12 +225,34 @@ client.on('messageCreate', async message => {
   // content filters
   if (message.content.toLowerCase().includes('kill') && message.content.toLowerCase().includes('yourself')) {
     message.delete();
+
+    const embed = {
+      color: 0xeff624,
+      title: 'Removed Message',
+      description: `Removed \`1\` message from <@${message.author.id}>.\n**Message content**:\n\`${message.content}\``,
+      timestamp: new Date(),
+    };
+
+    // get channel by id
+    const adminChannel = await message.guild.channels.fetch('877376896311132210');
+    adminChannel.send({ embeds: [embed] });
   };
 
   if (message.content.toLowerCase().includes('porn') || message.content.toLowerCase().includes('hentai')) {
     message.delete();
+    const embed = {
+      color: 0xeff624,
+      title: 'Removed Message',
+      description: `Removed \`1\` message from <@${message.author.id}>.\n**Message content**:\n\`${message.content}\``,
+      timestamp: new Date(),
+    };
+
+    // get channel by id
+    const adminChannel = await message.guild.channels.fetch('877376896311132210');
+    adminChannel.send({ embeds: [embed] });
   };
 
+  // end content filters
 
   if (messageContent[0].toLowerCase() === '.test_command_42' && message.author.id === client.application?.owner.id) {
     const user = message.author;
@@ -862,7 +884,7 @@ client.on('interactionCreate', async interaction => {
     };
 
     interaction.reply({ embeds: [replyEmbed] });
-  }
+  };
 });
 
 // delete empty voice channels in a catagory
