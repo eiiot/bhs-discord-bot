@@ -130,6 +130,18 @@ client.on('messageCreate', async message => {
     
     message.reply("Slash Command ID: `" + command[0] + "`");
   };
+
+  if (messageContent[0].toLowerCase() === '.react_with_heart' && message.author.id === client.application?.owner.id) {
+    message.delete();
+
+    console.log(messageContent[1]);
+    
+    var reactMessage = await message.channel.messages.fetch(messageContent[1]);
+    console.log(reactMessage);
+
+    reactMessage.react('❤️');
+    reactMessage.reply('❤️');
+  };
   
 	if (message.content.startsWith('.slash_command_perms') && message.author.id === client.application?.owner.id) {
     const args = message.content.trim().split(' ');
@@ -210,6 +222,16 @@ client.on('messageCreate', async message => {
     message.reply({ embeds: [embed] });
   };
 
+  // content filters
+  if (message.content.toLowerCase().includes('kill') && message.content.toLowerCase().includes('yourself')) {
+    message.delete();
+  };
+
+  if (message.content.toLowerCase().includes('porn') || message.content.toLowerCase().includes('hentai')) {
+    message.delete();
+  };
+
+
   if (messageContent[0].toLowerCase() === '.test_command_42' && message.author.id === client.application?.owner.id) {
     const user = message.author;
     const member = await message.guild.members.fetch(user.id);
@@ -225,6 +247,14 @@ client.on('messageCreate', async message => {
 
   if (message.channel.id === '879374919459303455' && !message.author.bot) {
     const member = await message.guild.members.fetch(message.author.id);
+
+    if (messageContent[0].toLowerCase() === '.letmetype') {
+      if (member.roles.cache.has('762719721472655430')) {
+        return;
+      } else {
+        message.delete();
+      };
+    };
 
     const embed = {
       color: 0xeff624,
