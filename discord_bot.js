@@ -296,6 +296,10 @@ client.on('messageCreate', async message => {
     replacedMessage.react(message.guild.emojis.cache.get('879376341613568040'));
     replacedMessage.react(message.guild.emojis.cache.get('879376341630341150'));
   };
+
+  if (message.mentions.has(client.user)) {
+    message.react('👋');
+  };
 });
 
 client.on('interactionCreate', async interaction => {
