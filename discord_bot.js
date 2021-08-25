@@ -297,7 +297,7 @@ client.on('messageCreate', async message => {
     replacedMessage.react(message.guild.emojis.cache.get('879376341630341150'));
   };
 
-  if (message.mentions.has(client.user)) {
+  if (message.mentions.has (client.user)) {
     message.react('👋');
   };
 });
@@ -377,8 +377,7 @@ client.on('interactionCreate', async interaction => {
     console.log(role);
 
     // get database
-    var emailsJSON = fs.readFileSync('./emails.json', 'utf8');
-    var emailsDatabase = JSON.parse(emailsJSON);
+    const emailsDatabase = JSON.parse(fs.readFileSync('./emails.json', 'utf8'));
 
     // check if email is in database
     console.log(emailsDatabase);
@@ -706,12 +705,25 @@ client.on('interactionCreate', async interaction => {
       // find email by id in database
       const email = emailsDatabase.find(object => object.id === user.id);
 
-      if (!member.roles.cache.some(role => role.id === '762720121205555220')) {
-        if (!member.roles.cache.some(role => role.id === '765670230747381790')) {
+      console.log(email);
+
+      if (email === undefined) {
+        if (!member.roles.cache.some(role => role.id === '762720121205555220')) {
+          if (!member.roles.cache.some(role => role.id === '765670230747381790')) {
+            const embed = {
+              color: 0xeff624,
+              title: 'Verification',
+              description: `${user.tag} is not verified.`,
+              timestamp: new Date(),
+            };
+            await interaction.reply({embeds: [embed],  ephemeral: true });
+            return;
+          };
+        } else {
           const embed = {
             color: 0xeff624,
-            title: 'Verification',
-            description: `${user.tag} is not verified.`,
+            title: 'User Info',
+            description: `${user.tag} does not exist in the database.`,
             timestamp: new Date(),
           };
           await interaction.reply({embeds: [embed],  ephemeral: true });
@@ -719,17 +731,6 @@ client.on('interactionCreate', async interaction => {
         };
       };
 
-      if (email === undefined) {
-        const embed = {
-          color: 0xeff624,
-          title: 'User Info',
-          description: `${user.tag} does not exist in the database.`,
-          timestamp: new Date(),
-        };
-        await interaction.reply({embeds: [embed],  ephemeral: true });
-        return;
-      };
-      console.log(email);
       const date = new Date(email.date);
       if (email) {
         console.log(email);
@@ -901,6 +902,43 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
       }
     }
   }
+});
+
+// log on user join
+client.on('guildMemberAdd', async (member) => {
+  const guild = member.guild;
+  const adminChannel = await guild.channels.fetch('877376896311132210');
+  const embed = {
+    color: 0xeff624,
+    title: 'Member Joined',
+    description: `${member.user.username} has joined the server!`,
+    timestamp: new Date(),
+  };
+  await adminChannel.send({embeds: [embed]});
+});
+
+// log on user leave, and remove from emails DB
+client.on('guildMemberRemove', async (member) => {
+  const guild = member.guild;
+  const adminChannel = await guild.channels.fetch('877376896311132210');
+  const embed = {
+    color: 0xeff624,
+    title: 'Member Left',
+    description: `${member.user.username} has left the server!`,
+    timestamp: new Date(),
+  };
+  await adminChannel.send({embeds: [embed]});
+
+  const user = await member.user.fetch();
+
+  const emailsDatabase = JSON.parse(fs.readFileSync('./emails.json', 'utf8'));
+  
+  for (var i = 0; i < emailsDatabase.length; i++) {
+    if (emailsDatabase[i].id == user.id) {
+        console.log('splicing');
+        emailsDatabase.splice(i, 1);
+    };
+  };
 });
 
 client.login(process.env.BOT_TOKEN);
