@@ -576,129 +576,139 @@ client.on('interactionCreate', async interaction => {
     const emailsDatabase = JSON.parse(fs.readFileSync('./emails.json', 'utf8'));
 
     if (action === 'unverify') {
-      if (!member.roles.cache.some(role => role.id === '762720121205555220')) {
-        if (!member.roles.cache.some(role => role.id === '765670230747381790')) {
-          const embed = {
-            color: 0xeff624,
-            title: 'Verification',
-            description: `${user.tag} is not verified.`,
-            timestamp: new Date(),
-          };
-          await interaction.reply({embeds: [embed],  ephemeral: true });
-
-          console.log(user.id);
-
-          console.log(user.id);
-
-          for (var i = 0; i < emailsDatabase.length; i++) {
-            if (emailsDatabase[i].id == user.id) {
-                console.log('splicing');
-                emailsDatabase.splice(i, 1);
+      if (member !== undefined) {
+        if (!member.roles.cache.some(role => role.id === '762720121205555220')) {
+          if (!member.roles.cache.some(role => role.id === '765670230747381790')) {
+            const embed = {
+              color: 0xeff624,
+              title: 'Verification',
+              description: `${user.tag} is not verified.`,
+              timestamp: new Date(),
             };
+            await interaction.reply({embeds: [embed],  ephemeral: true });
+
+            console.log(user.id);
+
+            console.log(user.id);
+
+            for (var i = 0; i < emailsDatabase.length; i++) {
+              if (emailsDatabase[i].id == user.id) {
+                  console.log('splicing');
+                  emailsDatabase.splice(i, 1);
+              };
+            };
+
+            console.log(emailsDatabase);
+
+            // save database
+            fs.writeFile('./emails.json', JSON.stringify(emailsDatabase), (err) => {
+              if (err) {
+                console.error(err);
+              }
+            });
+
+            return;
+          } else {
+            const embed = {
+              color: 0xeff624,
+              title: 'Verification',
+              description: `${user.tag} is a teacher. Removing two roles.`,
+              timestamp: new Date(),
+            };
+            await interaction.reply({embeds: [embed],  ephemeral: true });
+            member.roles.remove('765670230747381790');
           };
+        };
 
-          console.log(emailsDatabase);
 
-          // save database
-          fs.writeFile('./emails.json', JSON.stringify(emailsDatabase), (err) => {
-            if (err) {
-              console.error(err);
-            }
-          });
+        member.roles.remove('762720121205555220');
 
-          return;
-        } else {
-          const embed = {
+        const embed = {
+          color: 0xeff624,
+          title: 'User Unverified',
+          description: `${user.tag} is no longer verified.`,
+          timestamp: new Date(),
+        };
+
+        await interaction.reply({embeds: [embed],  ephemeral: true });
+
+        console.log(user.id);
+
+        console.log(typeof user.id);
+
+        if (user.id === "708428880121430137") {
+          console.log('user verified');
+        };
+        
+        // remove user from database
+        for (var i = 0; i < emailsDatabase.length; i++) {
+          if (emailsDatabase[i].id == user.id) {
+              emailsDatabase.splice(i, 1);
+              break;
+          };
+        };
+
+        console.log(emailsDatabase);
+
+        // save database
+        fs.writeFile('./emails.json', JSON.stringify(emailsDatabase), (err) => {
+          if (err) {
+            console.error(err);
+          };
+        });
+
+        const unverifyEmbed = {
+          color: 0xeff624,
+          title: 'You are no longer verified',
+          description: `Please message <@434013914091487232> if you believe this was a mistake.`,
+          timestamp: new Date(),
+        };
+        await user.send({embeds: [unverifyEmbed]});
+      };
+
+      if (action == 'verify') {
+        // add role to student
+        member.roles.add('762720121205555220');
+
+        // add student to database
+        const newUser = {
+          email: `Manually Verified by ${author.tag}`,
+          id: user.id,
+          date: new Date(),
+        };
+        emailsDatabase.push(newUser);
+
+        // save database
+        fs.writeFile('./emails.json', JSON.stringify(emailsDatabase), (err) => {
+          if (err) {
+            console.error(err);
+          }
+        });
+
+        const embed = {
+          color: 0xeff624,
+          title: 'User Verified',
+          description: `${user.tag} is now verified.`,
+          timestamp: new Date(),
+        };
+        await interaction.reply({embeds: [embed],  ephemeral: true });
+
+        const verifyEmbed = {
             color: 0xeff624,
             title: 'Verification',
-            description: `${user.tag} is a teacher. Removing two roles.`,
+            description: `You have been verified!\nPlease change your nickname to your real first name using \`/nick {name}\`.\nThanks!`,
             timestamp: new Date(),
+        };
+        await user.send({embeds: [verifyEmbed]});
+      } else {
+        // remove user from database
+        for (var i = 0; i < emailsDatabase.length; i++) {
+          if (emailsDatabase[i].id == user.id) {
+              emailsDatabase.splice(i, 1);
+              break;
           };
-          await interaction.reply({embeds: [embed],  ephemeral: true });
-          member.roles.remove('765670230747381790');
         };
       };
-
-
-      member.roles.remove('762720121205555220');
-
-      const embed = {
-        color: 0xeff624,
-        title: 'User Unverified',
-        description: `${user.tag} is no longer verified.`,
-        timestamp: new Date(),
-      };
-
-      await interaction.reply({embeds: [embed],  ephemeral: true });
-
-      console.log(user.id);
-
-      console.log(typeof user.id);
-
-      if (user.id === "708428880121430137") {
-        console.log('user verified');
-      };
-      
-      // remove user from database
-      for (var i = 0; i < emailsDatabase.length; i++) {
-        if (emailsDatabase[i].id == user.id) {
-            emailsDatabase.splice(i, 1);
-            break;
-        };
-      };
-
-      console.log(emailsDatabase);
-
-      // save database
-      fs.writeFile('./emails.json', JSON.stringify(emailsDatabase), (err) => {
-        if (err) {
-          console.error(err);
-        };
-      });
-
-      const unverifyEmbed = {
-        color: 0xeff624,
-        title: 'You are no longer verified',
-        description: `Please message <@434013914091487232> if you believe this was a mistake.`,
-        timestamp: new Date(),
-      };
-      await user.send({embeds: [unverifyEmbed]});
-    };
-
-    if (action == 'verify') {
-      // add role to student
-      member.roles.add('762720121205555220');
-
-      // add student to database
-      const newUser = {
-        email: `Manually Verified by ${author.tag}`,
-        id: user.id,
-        date: new Date(),
-      };
-      emailsDatabase.push(newUser);
-
-      // save database
-      fs.writeFile('./emails.json', JSON.stringify(emailsDatabase), (err) => {
-        if (err) {
-          console.error(err);
-        }
-      });
-
-      const embed = {
-        color: 0xeff624,
-        title: 'User Verified',
-        description: `${user.tag} is now verified.`,
-        timestamp: new Date(),
-      };
-      await interaction.reply({embeds: [embed],  ephemeral: true });
-
-      const verifyEmbed = {
-          color: 0xeff624,
-          title: 'Verification',
-          description: `You have been verified!\nPlease change your nickname to your real first name using \`/nick {name}\`.\nThanks!`,
-          timestamp: new Date(),
-      };
-      await user.send({embeds: [verifyEmbed]});
     };
 
     if (action === 'getinfo') {
