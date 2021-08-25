@@ -663,7 +663,12 @@ client.on('interactionCreate', async interaction => {
           description: `Please message <@434013914091487232> if you believe this was a mistake.`,
           timestamp: new Date(),
         };
-        await user.send({embeds: [unverifyEmbed]});
+        try {
+          await user.send({embeds: [unverifyEmbed]})
+        } catch (err) {
+          console.log(err);
+        };
+
       } else {
         // remove user from database
         for (var i = 0; i < emailsDatabase.length; i++) {
@@ -671,6 +676,28 @@ client.on('interactionCreate', async interaction => {
               emailsDatabase.splice(i, 1);
               break;
           };
+        };
+
+        const embed = {
+          color: 0xeff624,
+          title: 'User Unverified',
+          description: `${user.tag} is no longer verified.`,
+          timestamp: new Date(),
+        };
+
+        await interaction.reply({embeds: [embed],  ephemeral: true });
+
+        const unverifyEmbed = {
+          color: 0xeff624,
+          title: 'You are no longer verified',
+          description: `Please message <@434013914091487232> if you believe this was a mistake.`,
+          timestamp: new Date(),
+        };
+
+        try {
+          await user.send({embeds: [unverifyEmbed]});
+        } catch (err) {
+          console.log(err);
         };
       };
     };
@@ -708,7 +735,11 @@ client.on('interactionCreate', async interaction => {
           description: `You have been verified!\nPlease change your nickname to your real first name using \`/nick {name}\`.\nThanks!`,
           timestamp: new Date(),
       };
-      await user.send({embeds: [verifyEmbed]});
+      try {
+        await user.send({embeds: [verifyEmbed]});
+      } catch (err) {
+        console.log(err);
+      };
     };
 
     if (action === 'getinfo') {
