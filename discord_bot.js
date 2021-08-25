@@ -575,7 +575,7 @@ client.on('interactionCreate', async interaction => {
     // load database
     const emailsDatabase = JSON.parse(fs.readFileSync('./emails.json', 'utf8'));
 
-    if (action === 'unverify') {
+    if (action === 'unverify') {  
       if (member !== undefined) {
         if (!member.roles.cache.some(role => role.id === '762720121205555220')) {
           if (!member.roles.cache.some(role => role.id === '765670230747381790')) {
@@ -664,42 +664,6 @@ client.on('interactionCreate', async interaction => {
           timestamp: new Date(),
         };
         await user.send({embeds: [unverifyEmbed]});
-      };
-
-      if (action == 'verify') {
-        // add role to student
-        member.roles.add('762720121205555220');
-
-        // add student to database
-        const newUser = {
-          email: `Manually Verified by ${author.tag}`,
-          id: user.id,
-          date: new Date(),
-        };
-        emailsDatabase.push(newUser);
-
-        // save database
-        fs.writeFile('./emails.json', JSON.stringify(emailsDatabase), (err) => {
-          if (err) {
-            console.error(err);
-          }
-        });
-
-        const embed = {
-          color: 0xeff624,
-          title: 'User Verified',
-          description: `${user.tag} is now verified.`,
-          timestamp: new Date(),
-        };
-        await interaction.reply({embeds: [embed],  ephemeral: true });
-
-        const verifyEmbed = {
-            color: 0xeff624,
-            title: 'Verification',
-            description: `You have been verified!\nPlease change your nickname to your real first name using \`/nick {name}\`.\nThanks!`,
-            timestamp: new Date(),
-        };
-        await user.send({embeds: [verifyEmbed]});
       } else {
         // remove user from database
         for (var i = 0; i < emailsDatabase.length; i++) {
@@ -709,6 +673,42 @@ client.on('interactionCreate', async interaction => {
           };
         };
       };
+    };
+
+    if (action == 'verify') {
+      // add role to student
+      member.roles.add('762720121205555220');
+
+      // add student to database
+      const newUser = {
+        email: `Manually Verified by ${author.tag}`,
+        id: user.id,
+        date: new Date(),
+      };
+      emailsDatabase.push(newUser);
+
+      // save database
+      fs.writeFile('./emails.json', JSON.stringify(emailsDatabase), (err) => {
+        if (err) {
+          console.error(err);
+        }
+      });
+
+      const embed = {
+        color: 0xeff624,
+        title: 'User Verified',
+        description: `${user.tag} is now verified.`,
+        timestamp: new Date(),
+      };
+      await interaction.reply({embeds: [embed],  ephemeral: true });
+
+      const verifyEmbed = {
+          color: 0xeff624,
+          title: 'Verification',
+          description: `You have been verified!\nPlease change your nickname to your real first name using \`/nick {name}\`.\nThanks!`,
+          timestamp: new Date(),
+      };
+      await user.send({embeds: [verifyEmbed]});
     };
 
     if (action === 'getinfo') {
