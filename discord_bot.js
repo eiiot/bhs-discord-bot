@@ -980,6 +980,21 @@ client.on('guildMemberRemove', async (member) => {
         emailsDatabase.splice(i, 1);
     };
   };
+  
+  // write to file
+  fs.writeFile('./emails.json', JSON.stringify(emailsDatabase), (err) => {
+    if (err) console.log(err);
+  });
 });
 
 client.login(process.env.BOT_TOKEN);
+
+// these are comments
+// to make this
+// code longer
+// wow it's almost 1000 lines
+// incredible
+// wow
+// wow
+// wow
+console.log('1000');
