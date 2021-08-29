@@ -952,7 +952,7 @@ client.on('guildMemberAdd', async (member) => {
   const embed = {
     color: 0xeff624,
     title: 'Member Joined',
-    description: `${member.user.username} has joined the server!`,
+    description: `<@${user.id}> has joined the server!`,
     timestamp: new Date(),
   };
   await adminChannel.send({embeds: [embed]});
@@ -965,7 +965,7 @@ client.on('guildMemberRemove', async (member) => {
   const embed = {
     color: 0xeff624,
     title: 'Member Left',
-    description: `${member.user.username} has left the server!`,
+    description: `<@${user.id}> has left the server!`,
     timestamp: new Date(),
   };
   await adminChannel.send({embeds: [embed]});
