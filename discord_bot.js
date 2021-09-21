@@ -6,7 +6,7 @@ const client = new Discord.Client({
     intents: [
       "GUILDS",
       "GUILD_MEMBERS",
-      "GUILD_EMOJIS",
+      "GUILD_EMOJIS_AND_STICKERS",
       "GUILD_INTEGRATIONS",
       "GUILD_MESSAGE_REACTIONS",
       "GUILD_WEBHOOKS",
@@ -921,6 +921,14 @@ client.on('interactionCreate', async interaction => {
 
     suggestionMsg.react(interaction.guild.emojis.cache.get('879376341613568040'));
     suggestionMsg.react(interaction.guild.emojis.cache.get('879376341630341150'));
+
+    // start thread from message
+
+    suggestionMsg.startThread({
+      name: suggestion,
+      autoArchiveDuration: 4320,
+      reason: 'Suggestion Discussion'
+    });
 
     const replyEmbed = {
       color: 0xeff624,
