@@ -957,6 +957,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
 client.on('guildMemberAdd', async (member) => {
   const guild = member.guild;
   const adminChannel = await guild.channels.fetch('877376896311132210');
+  const user = member.user;
   const embed = {
     color: 0xeff624,
     title: 'Member Joined',
@@ -970,6 +971,7 @@ client.on('guildMemberAdd', async (member) => {
 client.on('guildMemberRemove', async (member) => {
   const guild = member.guild;
   const adminChannel = await guild.channels.fetch('877376896311132210');
+  const user = member.user;
   const embed = {
     color: 0xeff624,
     title: 'Member Left',
@@ -977,8 +979,6 @@ client.on('guildMemberRemove', async (member) => {
     timestamp: new Date(),
   };
   await adminChannel.send({embeds: [embed]});
-
-  const user = await member.user.fetch();
 
   const emailsDatabase = JSON.parse(fs.readFileSync('./emails.json', 'utf8'));
   
