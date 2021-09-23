@@ -925,7 +925,7 @@ client.on('interactionCreate', async interaction => {
     // start thread from message
 
     suggestionMsg.startThread({
-      name: `Suggestion by ${member.nickname}`,
+      name: suggestion.substring(0,99),
       autoArchiveDuration: 4320,
       reason: suggestion
     });
