@@ -925,9 +925,9 @@ client.on('interactionCreate', async interaction => {
     // start thread from message
 
     suggestionMsg.startThread({
-      name: suggestion,
+      name: `Suggestion by ${member.nickname}`,
       autoArchiveDuration: 4320,
-      reason: 'Suggestion Discussion'
+      reason: suggestion
     });
 
     const replyEmbed = {
