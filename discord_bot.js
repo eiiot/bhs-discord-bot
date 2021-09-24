@@ -1,7 +1,8 @@
-const Discord = require('discord.js');
-const dotenv = require('dotenv');
-const sgMail = require('@sendgrid/mail');
-const fs = require('fs');
+import Discord from 'discord.js';
+import dotenv from 'dotenv';
+import sgMail from '@sendgrid/mail';
+import fs from 'fs';
+import { ShlinkClient } from 'shlink-client';
 const client = new Discord.Client({
     intents: [
       "GUILDS",
@@ -30,6 +31,11 @@ dotenv.config();
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+const shClient = new ShlinkClient({
+  url: 'https://eliot.sh',
+  token: process.env.SHLINK_TOKEN,
+});
+
 // generatre a random string
 function makeid(length) {
   var result           = '';
@@ -42,21 +48,9 @@ charactersLength));
  return result;
 };
 
-
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
   client.user.setActivity(`Helping BHS Students!`, { type: "PLAYING"});
-});
-
-client.on('guildMemberAdd', async member => {
-  const embed = {
-    color: 0xeff624,
-    title: 'Welcome to the BHS Discord!',
-    description: 'Please verify in <#787039874384396329> using \`/verify {email}\` to gain access to the server.\nAlso be sure to famaliarize yourself with the rules in <#838236356336943134>.\nThanks, and welcome!',
-    timestamp: new Date(),
-  };
-
-  member.send({ embeds: [embed] });
 });
 
 // bot owner commands
@@ -68,14 +62,20 @@ client.on('messageCreate', async message => {
 	if (messageContent[0].toLowerCase() === '.deploy_slash_command' && message.author.id === client.application?.owner.id) {
 
     const data = {
-			name: 'stats',
-			description: 'Server statistics',
-      // options: [
-      //   {
-      //   name: 'suggestion',
-      //   type: 'STRING',
-      //   description: `Your suggestion`,
-      //   required: true
+			name: 'short',
+			description: 'Create a short url using the bhs.sh domain',
+      options: [
+        {
+        name: 'url',
+        type: 'STRING',
+        description: `URL to be shortened`,
+        required: true
+        },
+        {
+          name: 'slug',
+          type: 'STRING',
+          description: `A custom URL ending. Only available to teachers`,
+          required: false
         // },
         // {
         //   name: 'action',
@@ -96,8 +96,8 @@ client.on('messageCreate', async message => {
         //       value: 'getinfo',
         //     },
         //   ],
-      //   }                
-      // ]
+        }                
+      ]
 		};
 
 		const command = await client.guilds.cache.get(message.guild.id)?.commands.create(data);
@@ -945,6 +945,100 @@ client.on('interactionCreate', async interaction => {
 
     await interaction.reply({ embeds: [embed] });
   };
+
+  if (interaction.commandName === 'short') {
+    var url = interaction.options.get('url').value;
+    var slug = interaction.options.get('slug');
+    console.log(slug);
+    var user = interaction.user;
+    var member = await interaction.guild.members.fetch(interaction.user.id);
+
+    // check if url has https:// or http://, if it doesn't add https://
+    if (url.substring(0,7) != 'http://' && url.substring(0,8) != 'https://') {
+      url = 'https://' + url;
+    };
+
+    console.log(url);
+
+    if (slug !== null && slug !== undefined) {
+      var slug = slug.value;
+      // check if user has teacher role or admin role
+      if (member.roles.cache.has('765670230747381790') || member.roles.cache.has('762901377055588363') || member.roles.cache.has('765747696715038740')) {
+        // create a new short URL
+        const generatedURL = await shClient.createShortUrl({
+          longUrl: url,
+          customSlug: slug,
+          domain: 'bhs.sh',
+          tags: ['bhs-discord', `DiD(${user.id})`],
+          findIfExists: true
+        });
+        
+        console.log(generatedURL);
+
+        const embed = {
+          color: 0xeff624,
+          title: 'Shortened URL',
+          thumbnail: {
+            url: `${generatedURL.shortUrl}/qr-code?size=300&format=png.png`
+          },
+          description: `Your shortened URL is: \`${generatedURL.shortUrl}\`
+          Click the button below to open the link in your browser`,
+          timestamp: new Date(),
+        };
+
+        const row = new Discord.MessageActionRow()
+          .addComponents(
+            new Discord.MessageButton()
+              .setLabel(generatedURL.shortUrl)
+              .setStyle('LINK')
+              .setURL(generatedURL.shortUrl)
+          );
+
+          interaction.reply({ embeds: [embed], components: [row] });
+      } else {
+        const embed = {
+          color: 0xeff624,
+          title: 'Shortened URL',
+          description: `Sorry! For now, only teachers and server boosters can create custom short URLs D:`,
+          timestamp: new Date(),
+        };
+
+        interaction.reply({ embeds: [embed] });
+      };
+    } else {
+      // create a new short URL
+      const generatedURL = await shClient.createShortUrl({
+        longUrl: url,
+        domain: 'bhs.sh',
+        tags: ['bhs-discord', `DiD(${user.id})`],
+        findIfExists: true
+      });
+      
+      console.log(generatedURL);
+
+      const embed = {
+        color: 0xeff624,
+        title: 'Shortened URL',
+        // author photo
+        thumbnail: {
+          url: `${generatedURL.shortUrl}/qr-code?size=300&format=png.png`
+        },
+        description: `Your shortened URL is: \`${generatedURL.shortUrl}\`
+        Click the button below to open the link in your browser`,
+        timestamp: new Date(),
+      };
+
+      const row = new Discord.MessageActionRow()
+        .addComponents(
+          new Discord.MessageButton()
+            .setLabel(generatedURL.shortUrl)
+            .setStyle('LINK')
+            .setURL(generatedURL.shortUrl)
+        );
+
+        interaction.reply({ embeds: [embed], components: [row] });
+    };
+  };
 });
 
 // delete empty voice channels in a catagory
@@ -970,6 +1064,16 @@ client.on('guildMemberAdd', async (member) => {
     description: `<@${user.id}> has joined the server!`,
     timestamp: new Date(),
   };
+
+  const welcomeEmbed = {
+    color: 0xeff624,
+    title: 'Welcome to the BHS Discord!',
+    description: 'Please verify in <#787039874384396329> using \`/verify {email}\` to gain access to the server.\nAlso be sure to famaliarize yourself with the rules in <#838236356336943134>.\nThanks, and welcome!',
+    timestamp: new Date(),
+  };
+
+  member.send({ embeds: [welcomeEmbed] });
+
   await adminChannel.send({embeds: [embed]});
 });
 
@@ -1002,13 +1106,3 @@ client.on('guildMemberRemove', async (member) => {
 });
 
 client.login(process.env.BOT_TOKEN);
-
-// these are comments
-// to make this
-// code longer
-// wow it's almost 1000 lines
-// incredible
-// wow
-// wow
-// wow
-console.log('1000');

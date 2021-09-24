@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "discord_bot.js",
+  "type": "module",
   "dependencies": {
     "@sendgrid/mail": "^7.4.5",
     "discord.js": "^13.1.0",
     "dotenv": "^10.0.0",
+    "shlink-client": "^1.0.1",
     "tar": ">=6.1.9",
     "xmlhttprequest": "^1.8.0"
   },
