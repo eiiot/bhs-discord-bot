@@ -68,14 +68,14 @@ client.on('messageCreate', async message => {
 	if (messageContent[0].toLowerCase() === '.deploy_slash_command' && message.author.id === client.application?.owner.id) {
 
     const data = {
-			name: 'suggest',
-			description: 'Create a server suggestion!',
-      options: [
-        {
-        name: 'suggestion',
-        type: 'STRING',
-        description: `Your suggestion`,
-        required: true
+			name: 'stats',
+			description: 'Server statistics',
+      // options: [
+      //   {
+      //   name: 'suggestion',
+      //   type: 'STRING',
+      //   description: `Your suggestion`,
+      //   required: true
         // },
         // {
         //   name: 'action',
@@ -96,8 +96,8 @@ client.on('messageCreate', async message => {
         //       value: 'getinfo',
         //     },
         //   ],
-        }                
-      ]
+      //   }                
+      // ]
 		};
 
 		const command = await client.guilds.cache.get(message.guild.id)?.commands.create(data);
@@ -265,36 +265,6 @@ client.on('messageCreate', async message => {
       timestamp: new Date(),
     };
     await message.reply({embeds: [embed],  ephemeral: true });
-  };
-
-  if (message.channel.id === '879374919459303455' && !message.author.bot) {
-    const member = await message.guild.members.fetch(message.author.id);
-
-    if (messageContent[0].toLowerCase() === '.letmetype') {
-      if (member.roles.cache.has('762719721472655430')) {
-        return;
-      } else {
-        message.delete();
-      };
-    };
-
-    const embed = {
-      color: 0xeff624,
-      author: {
-        name: member.nickname,
-        icon_url: message.author.avatarURL(),
-      },
-      title: 'Lecture Suggestion',
-      description: message.content,
-      timestamp: new Date(),
-    };
-    
-    const replacedMessage = await message.channel.send({embeds: [embed]});
-
-    message.delete();
-
-    replacedMessage.react(message.guild.emojis.cache.get('879376341613568040'));
-    replacedMessage.react(message.guild.emojis.cache.get('879376341630341150'));
   };
 
   if (message.mentions.has (client.user)) {
@@ -938,6 +908,42 @@ client.on('interactionCreate', async interaction => {
     };
 
     interaction.reply({ embeds: [replyEmbed] });
+  };
+
+  if (interaction.commandName === 'stats') {
+    // server statistics
+    const server = interaction.guild;
+    const memberCount = server.memberCount;
+    // get number of users with "Teacher" Role
+    const teacherCount = server.roles.cache.get('765670230747381790').members.size;
+    // get number of users with "Student" Role
+    const studentCount = server.roles.cache.get('762720121205555220').members.size;
+    const botCount = server.members.cache.filter(member => member.user.bot).size;
+    const channelCount = server.channels.cache.size;
+    const roleCount = server.roles.cache.size;
+    const emojiCount = server.emojis.cache.size;
+    const createdAt = server.createdAt;
+
+    const embed = {
+      color: 0xeff624,
+      title: 'Server Statistics',
+      description: `
+      **Member Count:** ${memberCount}
+
+      **Teacher Count:** ${teacherCount}
+      **Student Count:** ${studentCount-teacherCount}      
+      **Bot Count:** ${botCount}
+
+      **Channel Count:** ${channelCount}
+      **Role Count:** ${roleCount}
+      **Emoji Count:** ${emojiCount}
+      
+      **Created At:** ${createdAt}
+      `,
+      timestamp: new Date(),
+    };
+
+    await interaction.reply({ embeds: [embed] });
   };
 });
 
