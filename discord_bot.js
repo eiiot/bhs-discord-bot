@@ -1,6 +1,7 @@
 import Discord from 'discord.js';
 import dotenv from 'dotenv';
 import sgMail from '@sendgrid/mail';
+import fetch from 'node-fetch';
 import fs from 'fs';
 import { ShlinkClient } from 'shlink-client';
 const client = new Discord.Client({
@@ -62,20 +63,20 @@ client.on('messageCreate', async message => {
 	if (messageContent[0].toLowerCase() === '.deploy_slash_command' && message.author.id === client.application?.owner.id) {
 
     const data = {
-			name: 'short',
-			description: 'Create a short url using the bhs.sh domain',
-      options: [
-        {
-        name: 'url',
-        type: 'STRING',
-        description: `URL to be shortened`,
-        required: true
-        },
-        {
-          name: 'slug',
-          type: 'STRING',
-          description: `A custom URL ending. Only available to teachers`,
-          required: false
+			name: 'leaderboard',
+			description: 'Mee6 xp leaderboard',
+      // options: [
+      //   {
+      //   name: 'url',
+      //   type: 'STRING',
+      //   description: `URL to be shortened`,
+      //   required: true
+      //   },
+      //   {
+      //     name: 'slug',
+      //     type: 'STRING',
+      //     description: `A custom URL ending. Only available to teachers`,
+      //     required: false
         // },
         // {
         //   name: 'action',
@@ -96,8 +97,8 @@ client.on('messageCreate', async message => {
         //       value: 'getinfo',
         //     },
         //   ],
-        }                
-      ]
+      //   }                
+      // ]
 		};
 
 		const command = await client.guilds.cache.get(message.guild.id)?.commands.create(data);
@@ -222,54 +223,44 @@ client.on('messageCreate', async message => {
     message.reply({ embeds: [embed] });
   };
 
-  // content filters
-  if (message.content.toLowerCase().includes('kill') && message.content.toLowerCase().includes('yourself')) {
-    message.delete();
-
-    const embed = {
-      color: 0xeff624,
-      title: 'Removed Message',
-      description: `Removed \`1\` message from <@${message.author.id}>.\n**Message content**:\n\`${message.content}\``,
-      timestamp: new Date(),
-    };
-
-    // get channel by id
-    const adminChannel = await message.guild.channels.fetch('877376896311132210');
-    adminChannel.send({ embeds: [embed] });
-  };
-
-  if (message.content.toLowerCase().includes('porn') || message.content.toLowerCase().includes('hentai')) {
-    message.delete();
-    const embed = {
-      color: 0xeff624,
-      title: 'Removed Message',
-      description: `Removed \`1\` message from <@${message.author.id}>.\n**Message content**:\n\`${message.content}\``,
-      timestamp: new Date(),
-    };
-
-    // get channel by id
-    const adminChannel = await message.guild.channels.fetch('877376896311132210');
-    adminChannel.send({ embeds: [embed] });
-  };
-
-  // end content filters
-
-  if (messageContent[0].toLowerCase() === '.test_command_42' && message.author.id === client.application?.owner.id) {
-    const user = message.author;
-    const member = await message.guild.members.fetch(user.id);
-
-    const embed = {
-      color: 0xeff624,
-      title: 'Verification',
-      description: `Your verification code was correct!\nPlease change your nickname to your real first name using \`/nick {name}\`, and get the role for your grade in <#762755217057513503>.\nThanks!`,
-      timestamp: new Date(),
-    };
-    await message.reply({embeds: [embed],  ephemeral: true });
-  };
-
   if (message.mentions.has (client.user)) {
     message.react('👋');
   };
+
+  // mee6 level up messages ->
+  if (message.author.id === '159985870458322944') {
+    const getUsers = async () => {
+      const response = await fetch('https://mee6.xyz/api/plugins/levels/leaderboard/762412666521124866');
+      const data = await response.json();
+      return data;
+    };
+    
+    getUsers().then(users => {
+      // convert json to array
+      const usersArray = JSON.parse(JSON.stringify(users));
+    
+      for (let i = 0; i < usersArray.players.length; i++) {
+        if (usersArray.players[i].level >= 10) {
+          // find role by id
+          const role = message.guild.roles.cache.find(role => role.id === '891136958951194717');
+
+          const member = message.guild.members.cache.find(member => member.id === usersArray.players[i].id);
+
+          // add role to user
+          member.roles.add(role);
+        } else if (usersArray.players[i].level >= 10) {
+          // find role by id
+          const role = message.guild.roles.cache.find(role => role.id === '891136958951194717');
+
+          const member = message.guild.members.cache.find(member => member.id === usersArray.players[i].id);
+
+          // remove role from user
+          member.roles.remove(role);
+        };
+      };
+    });
+  };
+     
 });
 
 client.on('interactionCreate', async interaction => {
@@ -860,14 +851,22 @@ client.on('interactionCreate', async interaction => {
   if (interaction.commandName === 'map') {
     const embed = {
       color: 0xeff624,
-      url: 'https://www.bhsmap.com',
       title: 'Berkeley High Map',
-      description: `An interactive map of Berkeley High is available at the link above!`,
+      description: `This interactive map of Berkeley High is a digital version of the map available on the BHS website.`,
       footer: {
         text: 'Created by Eliot'
       }
     };
-    await interaction.reply({ embeds: [embed] });
+
+    const row = new Discord.MessageActionRow()
+    .addComponents(
+      new Discord.MessageButton()
+        .setLabel(`Visit the Map!`)
+        .setStyle('LINK')
+        .setURL(`https://bhsmap.com`)
+    );
+
+    interaction.reply({ embeds: [embed], components: [row] });
   };
 
   if (interaction.commandName === 'suggest') {
@@ -945,6 +944,45 @@ client.on('interactionCreate', async interaction => {
 
     await interaction.reply({ embeds: [embed] });
   };
+
+  if (interaction.commandName === 'leaderboard') {
+    const getUsers = async () => {
+      const response = await fetch('https://mee6.xyz/api/plugins/levels/leaderboard/762412666521124866');
+      const data = await response.json();
+      return data;
+    };
+    
+    getUsers().then(users => {
+      const usersArray = JSON.parse(JSON.stringify(users)).players;
+
+      console.log(usersArray);
+
+      // format an embed with the leaderboard information
+      var leaderboardDescription = '';
+      for (var i = 0; i < 15 && i < usersArray.length; i++) {
+        leaderboardDescription += `${i+1}. <@${usersArray[i].id}> - **Level ${usersArray[i].level}** - *${usersArray[i].message_count} messages*\n`;
+        console.log(leaderboardDescription);
+      };
+        
+      const embed = {
+        color: 0xeff624,
+        title: 'Leaderboard',
+        description: leaderboardDescription,
+        timestamp: new Date(),
+      };
+
+      // link to mee6 leaderboard
+      const row = new Discord.MessageActionRow()
+      .addComponents(
+        new Discord.MessageButton()
+          .setLabel(`View Leaderboard`)
+          .setStyle('LINK')
+          .setURL(`https://mee6.xyz/leaderboard/762412666521124866`)
+      );
+
+      interaction.reply({ embeds: [embed], components: [row] });
+    });
+  }
 
   if (interaction.commandName === 'short') {
     var url = interaction.options.get('url').value;
@@ -1104,5 +1142,21 @@ client.on('guildMemberRemove', async (member) => {
     if (err) console.log(err);
   });
 });
+
+// message reaction add
+client.on('messageReactionAdd', async (reaction, user) => {
+  const guild = reaction.message.guild;
+  const member = await guild.members.fetch(user.id);
+  
+  if (reaction.message.channel.id == '839965498291519538') {
+    if (reaction.emoji.name == '🏁' || reaction.emoji.name == '🚫') {
+      if (member.roles.highest.position >= guild.roles.cache.get('762719721472655430').position) {
+        // archive the thread
+        reaction.message.thread.setArchived(true);
+      };
+    };
+  };
+});
+        
 
 client.login(process.env.BOT_TOKEN);
