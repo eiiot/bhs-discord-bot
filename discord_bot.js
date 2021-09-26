@@ -985,6 +985,8 @@ client.on('interactionCreate', async interaction => {
   }
 
   if (interaction.commandName === 'short') {
+    await interaction.deferReply();
+    try {
     var url = interaction.options.get('url').value;
     var slug = interaction.options.get('slug');
     console.log(slug);
@@ -1003,13 +1005,13 @@ client.on('interactionCreate', async interaction => {
       // check if user has teacher role or admin role
       if (member.roles.cache.has('765670230747381790') || member.roles.cache.has('762901377055588363') || member.roles.cache.has('765747696715038740')) {
         // create a new short URL
-        const generatedURL = await shClient.createShortUrl({
-          longUrl: url,
-          customSlug: slug,
-          domain: 'bhs.sh',
-          tags: ['bhs-discord', `DiD(${user.id})`],
-          findIfExists: true
-        });
+          const generatedURL = await shClient.createShortUrl({
+            longUrl: url,
+            customSlug: slug,
+            domain: 'bhs.sh',
+            tags: ['bhs-discord', `DiD(${user.id})`],
+            findIfExists: true
+          })
         
         console.log(generatedURL);
 
@@ -1032,7 +1034,7 @@ client.on('interactionCreate', async interaction => {
               .setURL(generatedURL.shortUrl)
           );
 
-          interaction.reply({ embeds: [embed], components: [row] });
+          interaction.editReply({ embeds: [embed], components: [row] });
       } else {
         const embed = {
           color: 0xeff624,
@@ -1041,7 +1043,7 @@ client.on('interactionCreate', async interaction => {
           timestamp: new Date(),
         };
 
-        interaction.reply({ embeds: [embed] });
+        interaction.editReply({ embeds: [embed] });
       };
     } else {
       // create a new short URL
@@ -1074,8 +1076,20 @@ client.on('interactionCreate', async interaction => {
             .setURL(generatedURL.shortUrl)
         );
 
-        interaction.reply({ embeds: [embed], components: [row] });
+        interaction.editReply({ embeds: [embed], components: [row] });
     };
+  } catch (err) {
+    console.log(err);
+    const embed = {
+      color: 0xeff624,
+      title: 'Shortened URL',
+      description: `Sorry! Something went wrong D:`,
+      timestamp: new Date(),
+    };
+
+    interaction.editReply({ embeds: [embed] });
+    return;
+  };
   };
 });
 
