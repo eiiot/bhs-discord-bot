@@ -1,7 +1,6 @@
 import Discord from 'discord.js';
 import dotenv from 'dotenv';
 import sgMail from '@sendgrid/mail';
-import fetch from 'node-fetch';
 import axios from 'axios';
 import fs from 'fs';
 import { ShlinkClient } from 'shlink-client';
