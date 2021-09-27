@@ -51,7 +51,15 @@ charactersLength));
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
-  client.user.setActivity(`Helping BHS Students!`, { type: "PLAYING"});
+    // get guild 
+    const guild = client.guilds.cache.get(`762412666521124866`);
+
+    console.log(guild.name);
+
+    // get guild size
+
+
+    client.user.setActivity(`Helping ${guild.memberCount} students!`, { type: 'PLAYING' });
 });
 
 // bot owner commands
@@ -1165,6 +1173,13 @@ client.on('messageReactionAdd', async (reaction, user) => {
     };
   };
 });
-        
+
+client.on('presenceUpdate', async (oldPresence, newPresence) => {
+  const guild = newPresence.guild;
+  const member = newPresence.member;
+  const user = newPresence.user;
+  
+    client.user.setActivity(`Helping ${guild.memberCount} students!`, { type: 'PLAYING' });
+});
 
 client.login(process.env.BOT_TOKEN);
