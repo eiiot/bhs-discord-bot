@@ -2,6 +2,7 @@ import Discord from 'discord.js';
 import dotenv from 'dotenv';
 import sgMail from '@sendgrid/mail';
 import fetch from 'node-fetch';
+import axios from 'axios';
 import fs from 'fs';
 import { ShlinkClient } from 'shlink-client';
 const client = new Discord.Client({
@@ -229,30 +230,27 @@ client.on('messageCreate', async message => {
 
   // mee6 level up messages ->
   if (message.author.id === '159985870458322944') {
-    const getUsers = async () => {
-      const response = await fetch('https://mee6.xyz/api/plugins/levels/leaderboard/762412666521124866');
-      const data = await response.json();
-      return data;
-    };
-    
-    getUsers().then(users => {
+
+    axios.get('https://mee6.xyz/api/plugins/levels/leaderboard/762412666521124866').then(async function(response) {
       // convert json to array
-      const usersArray = JSON.parse(JSON.stringify(users));
+      const responseArray = response.data;
+      console.log(responseArray);
+      const playersArray = responseArray.players;
     
-      for (let i = 0; i < usersArray.players.length; i++) {
-        if (usersArray.players[i].level >= 10) {
+      for (let i = 0; i < playersArray.length; i++) {
+        if (playersArray[i].level >= 10) {
           // find role by id
           const role = message.guild.roles.cache.find(role => role.id === '891136958951194717');
 
-          const member = message.guild.members.cache.find(member => member.id === usersArray.players[i].id);
+          const member = message.guild.members.cache.find(member => member.id === playersArray[i].id);
 
           // add role to user
           member.roles.add(role);
-        } else if (usersArray.players[i].level >= 10) {
+        } else if (playersArray[i].level >= 10) {
           // find role by id
           const role = message.guild.roles.cache.find(role => role.id === '891136958951194717');
 
-          const member = message.guild.members.cache.find(member => member.id === usersArray.players[i].id);
+          const member = message.guild.members.cache.find(member => member.id === playersArray[i].id);
 
           // remove role from user
           member.roles.remove(role);
@@ -946,21 +944,18 @@ client.on('interactionCreate', async interaction => {
   };
 
   if (interaction.commandName === 'leaderboard') {
-    const getUsers = async () => {
-      const response = await fetch('https://mee6.xyz/api/plugins/levels/leaderboard/762412666521124866');
-      const data = await response.json();
-      return data;
-    };
     
-    getUsers().then(users => {
-      const usersArray = JSON.parse(JSON.stringify(users)).players;
+    axios.get('https://mee6.xyz/api/plugins/levels/leaderboard/762412666521124866').then(function(response) {
+      const responseArray = response.data;
+      console.log(responseArray);
+      const playersArray = responseArray.players;
 
-      console.log(usersArray);
+      console.log(playersArray);
 
       // format an embed with the leaderboard information
       var leaderboardDescription = '';
-      for (var i = 0; i < 15 && i < usersArray.length; i++) {
-        leaderboardDescription += `${i+1}. <@${usersArray[i].id}> - **Level ${usersArray[i].level}** - *${usersArray[i].message_count} messages*\n`;
+      for (var i = 0; i < 15 && i < playersArray.length; i++) {
+        leaderboardDescription += `${i+1}. <@${playersArray[i].id}> - **Level ${playersArray[i].level}** - *${playersArray[i].message_count} messages*\n`;
         console.log(leaderboardDescription);
       };
         
