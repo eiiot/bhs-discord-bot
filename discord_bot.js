@@ -66,6 +66,9 @@ client.on('ready', () => {
 client.on('messageCreate', async message => {
 	if (!client.application?.owner) await client.application?.fetch();
 
+  // block messages in a channel
+  if (message.channel.id === '787039874384396329') return;
+
   const messageContent = message.content.split(" ");
 
 	if (messageContent[0].toLowerCase() === '.deploy_slash_command' && message.author.id === client.application?.owner.id) {
@@ -173,7 +176,8 @@ client.on('messageCreate', async message => {
       message.reply('Please use the following format: `.slash_command_perms <command id> <true/false> <role id>`');
       return;
     };
-
+    
+    try {
 		const command = await client.guilds.cache.get('762412666521124866')?.commands.fetch(commandId);
 		const permissions = [
 			{
@@ -184,10 +188,10 @@ client.on('messageCreate', async message => {
 		];
 
 		await command.permissions.add({ permissions })
-    .catch(err => {
-      message.reply('Please use the following format: `.slash_command_perms <command id> <true/false> <role id>`');
-      return;
-    });
+  } catch (e) {
+    message.reply('Please use the following format: `.slash_command_perms <command id> <true/false> <role id>`');
+    return;
+  };
 	};
 
   if (messageContent[0].toLowerCase() === '.studyroom') {
@@ -217,7 +221,7 @@ client.on('messageCreate', async message => {
   };
 
   if (messageContent[0].toLowerCase() === '!leaderboard') {
-    message.reply(`It's \`!levels\` <:nathan:837570945593638924>`);
+    message.reply(`It's \`/leaderboard\` <:nathan:837570945593638924>`);
   };
 
   if (messageContent[0].toLowerCase() === ',suggest') {
@@ -536,7 +540,7 @@ client.on('interactionCreate', async interaction => {
     const member = userOption.member;
     const actionOption = interaction.options.get('action');
     const author = interaction.user;
-    action = actionOption.value;
+    var action = actionOption.value;
 
     // load database
     const emailsDatabase = JSON.parse(fs.readFileSync('./emails.json', 'utf8'));
