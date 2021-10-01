@@ -1,4 +1,7 @@
 import Discord from 'discord.js';
+import express from 'express';
+import admin from 'firebase-admin';
+import serviceAccountKey from './serviceAccountKey.js';
 import dotenv from 'dotenv';
 import sgMail from '@sendgrid/mail';
 import axios from 'axios';
@@ -28,6 +31,8 @@ const client = new Discord.Client({
     ]
   })
 
+// ? SETUP IMPORTS ? //
+
 dotenv.config();
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -36,6 +41,14 @@ const shClient = new ShlinkClient({
   url: 'https://eliot.sh',
   token: process.env.SHLINK_TOKEN,
 });
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccountKey),
+});
+
+const expressApp = express();
+
+// ? OTHER FUNCTIONS ? //
 
 // generatre a random string
 function makeid(length) {
@@ -48,6 +61,8 @@ charactersLength));
  }
  return result;
 };
+
+// ? DISCORD BOT FUNCTIONS ? //
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -794,7 +809,7 @@ client.on('interactionCreate', async interaction => {
     await interaction.channel.setParent('819750695380975616', { lockPermissions: true });
   };
 
-  // make sure slash command is not in #verify
+  //?? make sure slash command is not in #verify
   if (interaction.channel.id == '787039874384396329') return;
 
   if (interaction.commandName === 'help') {    
@@ -1181,9 +1196,112 @@ client.on('messageReactionAdd', async (reaction, user) => {
 client.on('presenceUpdate', async (oldPresence, newPresence) => {
   const guild = newPresence.guild;
   const member = newPresence.member;
-  const user = newPresence.user;
   
     client.user.setActivity(`Helping ${guild.memberCount} students!`, { type: 'PLAYING' });
 });
 
 client.login(process.env.BOT_TOKEN);
+
+// ? WEB API & EXPRESS ? //
+
+const expressServer = expressApp.listen(process.env.PORT || 80, () => {
+  console.log(`Listening on port ${expressServer.address().port}`);
+});
+
+// on request recieved validate discord + google token
+expressApp.get('/discord', async (req, res) => {
+  try{
+  console.log('New Request')
+
+  var discordCode = req.query.discordCode;
+  var googleToken = req.query.googleToken;
+
+  console.log({discordCode, googleToken})
+
+  // validate google token
+  const decodedToken = await admin.auth().verifyIdToken(googleToken);
+
+  var userEmail = decodedToken.email;
+
+  // validate discord token
+  let data = `client_id=${process.env.DISCORD_CLIENT_ID}&client_secret=${process.env.DISCORD_CLIENT_SECRET}&grant_type=authorization_code&code=${discordCode}&redirect_uri=https://auth.bhs.sh`;
+
+  const discordToken = await axios.post('https://discord.com/api/v8/oauth2/token', data, {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  });
+  
+  // get user ID
+
+  console.log(discordToken.data);
+
+  const usersConfig = {
+    headers: { Authorization: `Bearer ${discordToken.data.access_token}` }
+  };
+
+  const discordUser = await axios.get(`https://discord.com/api/v8/users/@me`, usersConfig);
+
+  const discordUserID = discordUser.data.id;
+
+  // check if email ends in berkeley.net
+  if (!userEmail.endsWith('berkeley.net')) {
+    throw new Error('invalid_email');
+  };
+
+  // check if user is already in database
+  const emailsDatabase = JSON.parse(fs.readFileSync('./emails.json', 'utf8'));
+
+  for (var i = 0; i < emailsDatabase.length; i++) {
+    if (emailsDatabase[i].id === discordUserID || emailsDatabase[i].email === userEmail) {
+      throw new Error('user_exists');
+    };
+  }; 
+  
+  // otherwise verify user and add to database
+  const member = await client.guilds.cache.get('762412666521124866').members.fetch(discordUserID);
+  member.roles.add('762720121205555220');
+
+  if (userEmail.endsWith('@berkeley.net')) {
+    member.roles.add('765670230747381790');
+  };
+
+  const userObject = {
+    id: discordUserID,
+    email: userEmail,
+    date: new Date(),
+  };
+
+  emailsDatabase.push(userObject);
+  
+  // write to file
+
+  fs.writeFile('./emails.json', JSON.stringify(emailsDatabase), (err) => {
+    if (err) console.log(err);
+  });
+
+  // redirect user to /success using express
+  res.redirect('https://auth.bhs.sh/success');
+  return;
+  } catch (err) {
+    console.log(err);
+    console.log(err.message);
+
+    var errorType;
+
+    if (err.message.toLowerCase().includes('request failed with status code')) {
+      errorType = 'discord_error';
+    } else if (err.message.toLowerCase().includes('firebase')) {
+      errorType = 'google_error';
+    } else if (err.message === 'invalid_email') {
+      errorType = 'invalid_email';
+    } else if (err.message === 'user_exists') {
+      errorType = 'user_exists';
+    } else {
+      errorType = 'unknown_error';
+    };
+
+    console.log(errorType);
+
+    res.redirect(`https://auth.bhs.sh/error?error=${errorType}`);
+  return;
+  };
+});
