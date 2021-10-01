@@ -1222,6 +1222,7 @@ expressApp.get('/discord', async (req, res) => {
   const decodedToken = await admin.auth().verifyIdToken(googleToken);
 
   var userEmail = decodedToken.email;
+  var userName = decodedToken.name;
 
   // validate discord token
   let data = `client_id=${process.env.DISCORD_CLIENT_ID}&client_secret=${process.env.DISCORD_CLIENT_SECRET}&grant_type=authorization_code&code=${discordCode}&redirect_uri=https://auth.bhs.sh`;
@@ -1243,7 +1244,7 @@ expressApp.get('/discord', async (req, res) => {
   const discordUserID = discordUser.data.id;
 
   // check if email ends in berkeley.net
-  if (!userEmail.endsWith('berkeley.net')) {
+  if (!user.email.endsWith(".berkeley.net") || !user.emai.endsWith("@berkeley.net")) {
     throw new Error('invalid_email');
   };
 
@@ -1264,9 +1265,12 @@ expressApp.get('/discord', async (req, res) => {
     member.roles.add('765670230747381790');
   };
 
+  member.setNickname(userName);
+
   const userObject = {
     id: discordUserID,
     email: userEmail,
+    name: userName,
     date: new Date(),
   };
 

@@ -64,7 +64,8 @@
               provider.addScope("profile");
               provider.addScope("email");
               provider.setCustomParameters({
-                prompt: 'select_account'
+                prompt: 'select_account',
+                hd: 'students.berkeley.net'
               });
               firebase.auth().signInWithRedirect(provider);
         };
@@ -86,7 +87,7 @@
 
               user.getIdToken(false).then(function(idToken) {
                 buttonHtml.innerHTML = "Click to manually redirect";
-                buttonHtml.herf = "http://api.bhs.sh/discord?discordCode=${discordCode}&googleToken=${idToken}";
+                buttonHtml.herf = `http://api.bhs.sh/discord?discordCode=${discordCode}&googleToken=${idToken}`;
                 buttonHtml.style.display = "block";
                 // Send token to your backend via HTTPS
                 window.location.href = `http://api.bhs.sh/discord?discordCode=${discordCode}&googleToken=${idToken}`;
