@@ -97,7 +97,7 @@
               });
             } else {
               // if email ends with berkeley.net, redirect to discord
-              if (user.email.endsWith("berkeley.net")) {
+              if (userEmail.endsWith(".berkeley.net") || userEmail.endsWith("@berkeley.net")) {
                 //change the title and description
                 titleHtml.innerHTML = "Redirecting!";
                 descriptionHtml.innerHTML = "You are being redirected to Discord, to authenticate your account!";
