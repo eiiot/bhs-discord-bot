@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Berkeley High Discord Verification</title>
+    <title>Berkeley High Discord</title>
 
     <!-- update the version number as needed -->
     <script defer src="/__/firebase/9.1.0/firebase-app-compat.js"></script>
@@ -40,38 +40,37 @@
   </head>
   <body>
     <div id="message">
-      <h1 id='title'>Loading...</h1>
-      <p id='error'></p>
-      <a href="/logout" id='button'>Try Again</a>
+      <h1 id="title">Logging Out</h1>
+      <p id="description">Logging you out, please wait!</p>
+      <a id="button" href="/">Go Home</a>
     </div>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const errorHtml = document.querySelector('#error');
-        const titleHtml = document.querySelector('#title');
-        const buttonHtml = document.querySelector('#button');
+     document.addEventListener('DOMContentLoaded', function() {
 
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
+      buttonHtml = document.getElementById('button');
 
-        // get the error code
-        const errorCode = urlParams.get('error');
-
-        if (errorCode === 'discord_error') {
-          errorHtml.innerHTML = 'There was an error with your Discord account. Please try again.';
-        } else if (errorCode === 'google_error') {
-          errorHtml.innerHTML = 'There was an error with your Google account. Please try again.';
-        } else if (errorCode === 'invalid_email') {
-          errorHtml.innerHTML = 'The email you entered is invalid. Please try again using your @berkeley.net or @students.berkeley.net email!';
-        } else if (errorCode === 'user_exists') {
-          errorHtml.innerHTML = 'The email you entered is already associated with an account. Please try again using a different email!';
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in.
+          document.getElementById('title').innerHTML = 'Logging Out';
+          document.getElementById('description').innerHTML = 'Logging you out, please wait!';
+          document.getElementById('button').href = '/';
+          firebase.auth().signOut();
+          // wait 1 second then add the button
+          setTimeout(function() {
+            document.getElementById('button').style.display = 'block';
+          }, 1000);
         } else {
-          errorHtml.innerHTML = 'An unidentified error has occured. Please try again!';
+          // No user is signed in.
+          document.location.href = '/';
+                    // wait 1 second then add the button
+          setTimeout(function() {
+            document.getElementById('button').style.display = 'block';
+          }, 1000);
         };
-
-        buttonHtml.style.display = 'block';
-        titleHtml.innerHTML = 'Error';
       });
+    });
     </script>
   </body>
 </html>
