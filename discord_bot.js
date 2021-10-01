@@ -1244,7 +1244,7 @@ expressApp.get('/discord', async (req, res) => {
   const discordUserID = discordUser.data.id;
 
   // check if email ends in berkeley.net
-  if (userEmail.endsWith(".berkeley.net") || userEmail.endsWith("@berkeley.net")) {
+  if (!userEmail.endsWith(".berkeley.net") || !userEmail.endsWith("@berkeley.net")) {
     throw new Error('invalid_email');
   };
 
