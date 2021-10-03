@@ -91,9 +91,7 @@ client.on('ready', () => {
 
     channel.send({ embeds: [embed], components: [row] });
   };
-
-  verifyMessage();
-    // get guild size
+  // get guild size
 
 
     client.user.setActivity(`Helping ${guild.memberCount} students!`, { type: 'PLAYING' });
