@@ -1172,12 +1172,19 @@ client.on('guildMemberAdd', async (member) => {
 
   const welcomeEmbed = {
     color: 0xeff624,
-    title: 'Welcome to the BHS Discord!',
-    description: 'Please verify in <#787039874384396329> using \`/verify {email}\` to gain access to the server.\nAlso be sure to famaliarize yourself with the rules in <#838236356336943134>.\nThanks, and welcome!',
-    timestamp: new Date(),
+    title: 'How to Verify for the BHS Discord!',
+    description: "We verify users to make sure that every student who joins the BHS Discord is a BUSD student! Don't worry, verification is a simple process, that only takes ~1 minute.\n\n**Step 1:** Visit the link below! (If you're having issues, the link is https://auth.bhs.sh)\n**Step 2:** Follow the directions, and sign in with your BUSD email, and Discord account.\n**Step 3:** That's it! You're now verified. Enjoy the BHS Discord!\n\n*If you encounter any issues with the verification process, or would like to use a different name than the one specified on your Google account, please contact <@434013914091487232>*",
   };
 
-  member.send({ embeds: [welcomeEmbed] });
+  const row = new Discord.MessageActionRow()
+  .addComponents(
+    new Discord.MessageButton()
+      .setLabel(`Click Me!`)
+      .setStyle('LINK')
+      .setURL(`https://auth.bhs.sh`)
+  );
+
+  member.send({ embeds: [welcomeEmbed], components: [row] });
 
   await adminChannel.send({embeds: [embed]});
 });
@@ -1284,9 +1291,18 @@ expressApp.get('/discord', async (req, res) => {
   // check if user is already in database
   const emailsDatabase = JSON.parse(fs.readFileSync('./emails.json', 'utf8'));
 
+  var reverified = false;
+
   for (var i = 0; i < emailsDatabase.length; i++) {
-    if (emailsDatabase[i].id === discordUserID || emailsDatabase[i].email === userEmail) {
-      throw new Error('user_exists');
+    if (emailsDatabase[i].email === userEmail || emailsDatabase[i].id == discordUserID) {
+      if (emailsDatabase[i].reverified || emailsDatabase[i].id !== discordUserID) {
+        throw new Error('user_exists');
+      } else {
+        // delete user from database
+        emailsDatabase.splice(i, 1);
+        // throw new Error('user_exists');
+        reverified = true;
+      };
     };
   }; 
   
@@ -1305,6 +1321,11 @@ expressApp.get('/discord', async (req, res) => {
     email: userEmail,
     name: userName,
     date: new Date(),
+  };
+
+  // if reverified = true, add "reverified: true" to user object
+  if (reverified) {
+    userObject.reverified = true;
   };
 
   emailsDatabase.push(userObject);
