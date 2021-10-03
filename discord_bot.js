@@ -1291,17 +1291,14 @@ expressApp.get('/discord', async (req, res) => {
   // check if user is already in database
   const emailsDatabase = JSON.parse(fs.readFileSync('./emails.json', 'utf8'));
 
-  var reverified = false;
-
   for (var i = 0; i < emailsDatabase.length; i++) {
     if (emailsDatabase[i].email === userEmail || emailsDatabase[i].id == discordUserID) {
-      if (emailsDatabase[i].reverified || emailsDatabase[i].id !== discordUserID) {
+      if (emailsDatabase[i].version = '2.0' || emailsDatabase[i].id !== discordUserID) {
         throw new Error('user_exists');
       } else {
         // delete user from database
         emailsDatabase.splice(i, 1);
         // throw new Error('user_exists');
-        reverified = true;
       };
     };
   }; 
@@ -1321,11 +1318,7 @@ expressApp.get('/discord', async (req, res) => {
     email: userEmail,
     name: userName,
     date: new Date(),
-  };
-
-  // if reverified = true, add "reverified: true" to user object
-  if (reverified) {
-    userObject.reverified = true;
+    version: '2.0'
   };
 
   emailsDatabase.push(userObject);
