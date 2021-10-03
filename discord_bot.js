@@ -1026,6 +1026,17 @@ client.on('interactionCreate', async interaction => {
   }
 
   if (interaction.commandName === 'short') {
+    // if user has blacklist role then don't allow them to use this command
+    if (interaction.member.roles.cache.has('894096571845730345')) {
+      const embed = {
+        color: 0xeff624,
+        title: 'Blacklisted',
+        description: `You are blacklisted from using this command.`,
+        timestamp: new Date(),
+      };
+
+      interaction.reply({ embeds: [embed] });
+    } else {
     await interaction.deferReply();
     try {
     var url = interaction.options.get('url').value;
@@ -1130,6 +1141,7 @@ client.on('interactionCreate', async interaction => {
 
     interaction.editReply({ embeds: [embed] });
     return;
+  };
   };
   };
 });
