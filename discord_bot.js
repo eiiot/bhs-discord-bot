@@ -1293,7 +1293,7 @@ expressApp.get('/discord', async (req, res) => {
 
   for (var i = 0; i < emailsDatabase.length; i++) {
     if (emailsDatabase[i].email === userEmail || emailsDatabase[i].id == discordUserID) {
-      if (emailsDatabase[i].version = '2.0' || emailsDatabase[i].id !== discordUserID) {
+      if (emailsDatabase[i].version >= 2.0 || emailsDatabase[i].id !== discordUserID) {
         throw new Error('user_exists');
       } else {
         // delete user from database
@@ -1318,7 +1318,7 @@ expressApp.get('/discord', async (req, res) => {
     email: userEmail,
     name: userName,
     date: new Date(),
-    version: '2.0'
+    version: 2.0
   };
 
   emailsDatabase.push(userObject);
