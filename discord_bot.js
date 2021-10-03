@@ -1311,7 +1311,11 @@ expressApp.get('/discord', async (req, res) => {
     member.roles.add('765670230747381790');
   };
 
-  member.setNickname(userName);
+  console.log('Changing Username');
+
+  const userNickname = await member.setNickname(userName);
+  
+  console.log(`Changed nickname to ${userNickname.nickname}`);
 
   const userObject = {
     id: discordUserID,
