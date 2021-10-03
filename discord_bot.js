@@ -1312,7 +1312,7 @@ expressApp.get('/discord', async (req, res) => {
     timestamp: new Date(),
   };
 
-  const adminChannel = await interaction.guild.channels.fetch('877376896311132210');
+  const adminChannel = await client.guilds.cache.get('762412666521124866').channels.fetch('877376896311132210');
   
   await adminChannel.send({embeds: [logEmbed]});
 
