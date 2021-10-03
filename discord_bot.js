@@ -71,6 +71,28 @@ client.on('ready', () => {
 
     console.log(guild.name);
 
+    // generate a webhook for #announcements
+  async function verifyMessage() {
+    const channel = client.guilds.cache.get(`762412666521124866`).channels.cache.get(`787039874384396329`);
+
+    const embed = {
+      color: 0xeff624,
+      title: 'How to Verify for the BHS Discord!',
+      description: "We verify users to make sure that every student who joins the BHS Discord is a BUSD student! Don't worry, verification is a simple process, that only takes ~1 minute.\n\n**Step 1:** Visit the link below! (If you're having issues, the link is https://auth.bhs.sh)\n**Step 2:** Follow the directions, and sign in with your BUSD email, and Discord account.\n**Step 3:** That's it! You're now verified. Enjoy the BHS Discord!\n\n*If you encounter any issues with the verification process, or would like to use a different name than the one specified on your Google account, please contact <@434013914091487232>*",
+    };
+
+    const row = new Discord.MessageActionRow()
+    .addComponents(
+      new Discord.MessageButton()
+        .setLabel(`Click Me!`)
+        .setStyle('LINK')
+        .setURL(`https://auth.bhs.sh`)
+    );
+
+    channel.send({ embeds: [embed], components: [row] });
+  };
+
+  verifyMessage();
     // get guild size
 
 
@@ -1282,6 +1304,17 @@ expressApp.get('/discord', async (req, res) => {
   fs.writeFile('./emails.json', JSON.stringify(emailsDatabase), (err) => {
     if (err) console.log(err);
   });
+
+  const logEmbed = {
+    color: 0xeff624,
+    title: 'Verification',
+    description: `<@${discordUserID}> was verified!`,
+    timestamp: new Date(),
+  };
+
+  const adminChannel = await interaction.guild.channels.fetch('877376896311132210');
+  
+  await adminChannel.send({embeds: [logEmbed]});
 
   // redirect user to /success using express
   res.redirect('https://auth.bhs.sh/success');
