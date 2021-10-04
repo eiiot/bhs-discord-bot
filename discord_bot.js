@@ -759,7 +759,7 @@ client.on('interactionCreate', async interaction => {
             const embed = {
               color: 0xeff624,
               title: 'Verification',
-              description: `${user.tag} is not verified.`,
+              description: `<@${user.id}> is not verified.`,
               timestamp: new Date(),
             };
             await interaction.reply({embeds: [embed],  ephemeral: true });
@@ -769,7 +769,7 @@ client.on('interactionCreate', async interaction => {
           const embed = {
             color: 0xeff624,
             title: 'User Info',
-            description: `${user.tag} does not exist in the database.`,
+            description: `<@${user.id}> does not exist in the database.`,
             timestamp: new Date(),
           };
           await interaction.reply({embeds: [embed],  ephemeral: true });
@@ -784,7 +784,7 @@ client.on('interactionCreate', async interaction => {
           const embed = {
             color: 0xeff624,
             title: 'User Email',
-            description: `**${user.tag}**'s email is **${dbUser.email}**.\nUser's full name is **${dbUser.name}**\nUser was first verified on **${date.toString()}**`,
+            description: `<@${user.id}>'s email is **${dbUser.email}**.\nUser's full name is **${dbUser.name}**\nUser was first verified on **${date.toString()}**`,
             timestamp: new Date(),
           };
           await interaction.reply({embeds: [embed],  ephemeral: true });
@@ -792,7 +792,7 @@ client.on('interactionCreate', async interaction => {
           const embed = {
             color: 0xeff624,
             title: 'User Email',
-            description: `**${user.tag}**'s email is **${dbUser.email}**.\nUser's full name is **${dbUser.name}**\nDate is unavailable.`,
+            description: `<@${user.id}>'s email is **${dbUser.email}**.\nUser's full name is **${dbUser.name}**\nDate is unavailable.`,
             timestamp: new Date(),
           };
           await interaction.reply({embeds: [embed],  ephemeral: true });
@@ -801,7 +801,7 @@ client.on('interactionCreate', async interaction => {
         const embed = {
           color: 0xeff624,
           title: 'User Email',
-          description: `${user.tag} has not been verified.`,
+          description: `<@${user.id}> has not been verified.`,
           timestamp: new Date(),
         };
         await interaction.reply({embeds: [embed],  ephemeral: true });
