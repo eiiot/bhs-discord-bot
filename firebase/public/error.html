@@ -65,6 +65,8 @@
           errorHtml.innerHTML = 'The email you entered is invalid. Please try again using your @berkeley.net or @students.berkeley.net email!';
         } else if (errorCode === 'user_exists') {
           errorHtml.innerHTML = 'The email you entered is already associated with an account. Please try again using a different email!';
+        } else if (errorCode === 'safari') {
+          errorHtml.innerHTML = 'Safari is not supported. Please try again using Chrome or Firefox.';
         } else {
           errorHtml.innerHTML = 'An unidentified error has occured. Please try again!';
         };

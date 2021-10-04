@@ -749,11 +749,11 @@ client.on('interactionCreate', async interaction => {
 
     if (action === 'getinfo') {
       // find email by id in database
-      const email = emailsDatabase.find(object => object.id === user.id);
+      const dbUser = emailsDatabase.find(object => object.id === user.id);
 
-      console.log(email);
+      console.log(dbUser);
 
-      if (email === undefined) {
+      if (dbUser === undefined) {
         if (!member.roles.cache.some(role => role.id === '762720121205555220')) {
           if (!member.roles.cache.some(role => role.id === '765670230747381790')) {
             const embed = {
@@ -777,14 +777,14 @@ client.on('interactionCreate', async interaction => {
         };
       };
 
-      const date = new Date(email.date);
-      if (email) {
-        console.log(email);
+      const date = new Date(dbUser.date);
+      if (dbUser) {
+        console.log(dbUser);
         if (date !== undefined) {
           const embed = {
             color: 0xeff624,
             title: 'User Email',
-            description: `**${user.tag}**'s email is **${email.email}**.\nUser was first verified on **${date.toString()}**`,
+            description: `**${user.tag}**'s email is **${dbUser.email}**.\nUser's full name is **${dbUser.name}**\nUser was first verified on **${date.toString()}**`,
             timestamp: new Date(),
           };
           await interaction.reply({embeds: [embed],  ephemeral: true });
@@ -792,7 +792,7 @@ client.on('interactionCreate', async interaction => {
           const embed = {
             color: 0xeff624,
             title: 'User Email',
-            description: `**${user.tag}**'s email is **${email.email}**.\nDate is unavailable.`,
+            description: `**${user.tag}**'s email is **${dbUser.email}**.\nUser's full name is **${dbUser.name}**\nDate is unavailable.`,
             timestamp: new Date(),
           };
           await interaction.reply({embeds: [embed],  ephemeral: true });

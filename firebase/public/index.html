@@ -46,9 +46,14 @@
     </div>
 
     <script>
+      // Redirect if page is Safari
       document.addEventListener('DOMContentLoaded', function() {
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
+
+        if (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1 && urlParams.get('forceSafari') != 'true') {
+        window.location = '/error?error=safari';
+      };
 
         const titleHtml = document.querySelector('#title');
         const descriptionHtml = document.querySelector('#description');
