@@ -46,14 +46,17 @@
     </div>
 
     <script>
+      console.log('Loading...');
       // Redirect if page is Safari
       document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOMContentLoaded');
+        
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
 
         if (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1 && urlParams.get('forceSafari') != 'true') {
-        window.location = '/error?error=safari';
-      };
+          window.location = '/error?error=safari';
+        };
 
         const titleHtml = document.querySelector('#title');
         const descriptionHtml = document.querySelector('#description');
@@ -65,21 +68,22 @@
         //   document.location.href = '/';
         // };
 
-        function googleLogin() {
-          var provider = new firebase.auth.GoogleAuthProvider();
-              provider.addScope("profile");
-              provider.addScope("email");
-              provider.setCustomParameters({
-                prompt: 'select_account',
-                hd: 'students.berkeley.net'
-              });
-              firebase.auth().signInWithRedirect(provider);
-        };
+        console.log('Init Auth Provider');
 
-        window.googleLogin = googleLogin;
+        var provider = new firebase.auth.GoogleAuthProvider();
+            provider.addScope("profile");
+            provider.addScope("email");
+            provider.setCustomParameters({
+              prompt: 'select_account',
+              hd: 'students.berkeley.net'
+            });
+
+        console.log('Created provider')
 
         firebase.auth().onAuthStateChanged(function(user) {
+          console.log('Checking onAuthStateChanged');
           if (user) {
+            console.log('User Exists')
             window.user = user;
 
             const discordCode = urlParams.get('code');
@@ -93,7 +97,7 @@
 
               user.getIdToken(false).then(function(idToken) {
                 buttonHtml.innerHTML = "Click to manually redirect";
-                buttonHtml.herf = `http://api.bhs.sh/discord?discordCode=${discordCode}&googleToken=${idToken}`;
+                buttonHtml.href = `http://api.bhs.sh/discord?discordCode=${discordCode}&googleToken=${idToken}`;
                 buttonHtml.style.display = "block";
                 // Send token to your backend via HTTPS
                 window.location.href = `http://api.bhs.sh/discord?discordCode=${discordCode}&googleToken=${idToken}`;
@@ -102,13 +106,14 @@
                 console.log(error);
               });
             } else {
+              console.log('User does not exist')
               // if email ends with berkeley.net, redirect to discord
               if (user.email.endsWith(".berkeley.net") || user.email.endsWith("@berkeley.net")) {
                 //change the title and description
                 titleHtml.innerHTML = "Redirecting!";
                 descriptionHtml.innerHTML = "You are being redirected to Discord, to authenticate your account!";
                 buttonHtml.innerHTML = "Click to manually redirect";
-                buttonHtml.herf = "https://discord.com/api/oauth2/authorize?client_id=837783608101699714&redirect_uri=https%3A%2F%2Fauth.bhs.sh&response_type=code&scope=identify";
+                buttonHtml.href = "https://discord.com/api/oauth2/authorize?client_id=837783608101699714&redirect_uri=https%3A%2F%2Fauth.bhs.sh&response_type=code&scope=identify";
                 buttonHtml.style.display = "block";
                 // redirect user to discord
                 window.location.href = "https://discord.com/api/oauth2/authorize?client_id=837783608101699714&redirect_uri=https%3A%2F%2Fauth.bhs.sh&response_type=code&scope=identify";
@@ -117,7 +122,7 @@
                 titleHtml.innerHTML = "Error";
                 descriptionHtml.innerHTML = "Redirecting";
                 buttonHtml.innerHTML = "Click to manually redirect";
-                buttonHtml.herf = "/error?error=invalid_email";
+                buttonHtml.href = "/error?error=invalid_email";
                 buttonHtml.style.display = "block";
 
                 console.log("Invalid email");
@@ -134,7 +139,9 @@
             button.innerHTML = "Verify";
             buttonHtml.style.display = 'block';
             // change onclick
-            buttonHtml.onclick = googleLogin;
+            buttonHtml.onclick = function() {
+              firebase.auth().signInWithRedirect(provider);
+            };
           };
         });
       });
