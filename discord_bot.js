@@ -229,6 +229,42 @@ client.on('messageCreate', async message => {
   };
 	};
 
+  if (message.content.startsWith('.firealarm') && message.author.id === client.application?.owner.id) {
+    const args = message.content.trim().split(' ');
+    const period = args[1];
+
+    const fireAlarms = JSON.parse(fs.readFileSync('fireAlarms.json'))
+
+    fireAlarms.total++;
+
+    fireAlarms.lastPull = Date.now();
+
+    fireAlarms.periods[period]++;
+
+    const lastPull = new Date(fireAlarms.lastPull);
+
+    const embed = {
+      color: 0xeff624,
+      title: 'Fire Alarms',
+      description: `**Total: ${fireAlarms.total}**
+      \`\`\`Period 0: ${fireAlarms.periods[0]}
+Period 1: ${fireAlarms.periods[1]}
+Period 2: ${fireAlarms.periods[2]}
+Period 3: ${fireAlarms.periods[3]}
+Period 4: ${fireAlarms.periods[4]}
+Period 5: ${fireAlarms.periods[5]}
+Period 6: ${fireAlarms.periods[6]}
+Period 7: ${fireAlarms.periods[7]}\`\`\``,
+      timestamp: new Date(lastPull),
+    };
+
+    const webhook = new Discord.WebhookClient({ url: 'https://discord.com/api/webhooks/900169043615555606/f8dsJ62cOTQnDExeAD_vj5rD4ZMIuE0O80UdPJZ8d582ol90yEX59L571kr3T-ey2XRA' });
+
+    webhook.editMessage('900169854311620619', { embeds: [embed] });
+
+    fs.writeFileSync('fireAlarms.json', JSON.stringify(fireAlarms));
+	};
+
   if (messageContent[0].toLowerCase() === '.studyroom') {
     const embed = {
       color: 0xeff624,
@@ -1243,7 +1279,7 @@ client.login(process.env.BOT_TOKEN);
 
 // ? WEB API & EXPRESS ? //
 
-const expressServer = expressApp.listen(process.env.PORT || 80, () => {
+const expressServer = expressApp.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${expressServer.address().port}`);
 });
 
