@@ -258,7 +258,7 @@ Period 7: ${fireAlarms.periods[7]}\`\`\``,
       timestamp: new Date(lastPull),
     };
 
-    const webhook = new Discord.WebhookClient({ url: 'https://discord.com/api/webhooks/900169043615555606/f8dsJ62cOTQnDExeAD_vj5rD4ZMIuE0O80UdPJZ8d582ol90yEX59L571kr3T-ey2XRA' });
+    const webhook = new Discord.WebhookClient({ url: process.env.FIRE_ALARM_WEBHOOK });
 
     webhook.editMessage('900169854311620619', { embeds: [embed] });
 
