@@ -233,6 +233,11 @@ client.on('messageCreate', async message => {
     const args = message.content.trim().split(' ');
     const period = args[1];
 
+    if (period == undefined) {
+      message.reply('Please use the following format: `.firealarm <period>`');
+      return;
+    };
+
     const fireAlarms = JSON.parse(fs.readFileSync('fireAlarms.json'))
 
     fireAlarms.total++;
@@ -260,7 +265,8 @@ Period 7: ${fireAlarms.periods[7]}\`\`\``,
 
     const webhook = new Discord.WebhookClient({ url: process.env.FIRE_ALARM_WEBHOOK });
 
-    webhook.editMessage('900169854311620619', { embeds: [embed] });
+    webhook.editMessage('900173448486191155', { embeds: [embed] });
+    // webhook.send({ embeds: [embed] });
 
     fs.writeFileSync('fireAlarms.json', JSON.stringify(fireAlarms));
 	};
