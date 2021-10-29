@@ -334,7 +334,7 @@ Period 7: ${fireAlarms.periods[7]}\`\`\``,
 
           // add role to user
           member.roles.add(role);
-        } else if (playersArray[i].level >= 10) {
+        } else if (playersArray[i].level < 10) {
           // find role by id
           const role = message.guild.roles.cache.find(role => role.id === '891136958951194717');
 
