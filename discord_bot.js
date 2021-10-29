@@ -324,6 +324,10 @@ Period 7: ${fireAlarms.periods[7]}\`\`\``,
       const responseArray = response.data;
       console.log(responseArray);
       const playersArray = responseArray.players;
+
+      console.log('Updating user levels!');
+
+      console.time('updateUserLevels');
     
       for (let i = 0; i < playersArray.length; i++) {
         if (playersArray[i].level >= 10) {
@@ -333,7 +337,11 @@ Period 7: ${fireAlarms.periods[7]}\`\`\``,
           const member = message.guild.members.cache.find(member => member.id === playersArray[i].id);
 
           // add role to user
-          member.roles.add(role);
+          try {
+            await member.roles.add(role);
+          } catch (e) {
+            console.log(e);
+          };
         } else if (playersArray[i].level < 10) {
           // find role by id
           const role = message.guild.roles.cache.find(role => role.id === '891136958951194717');
@@ -344,6 +352,9 @@ Period 7: ${fireAlarms.periods[7]}\`\`\``,
           member.roles.remove(role);
         };
       };
+
+      console.log('User levels updated! Took:');
+      console.timeEnd('updateUserLevels');
     });
   };
      
