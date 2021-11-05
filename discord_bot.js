@@ -674,15 +674,13 @@ client.on('interactionCreate', async interaction => {
             const embed = {
               color: 0xeff624,
               title: 'Verification',
-              description: `${user.tag} is a teacher. Removing two roles.`,
+              description: `${user.tag} is a teacher. Please unverify manually.`,
               timestamp: new Date(),
             };
             await interaction.reply({embeds: [embed],  ephemeral: true });
-            member.roles.remove('765670230747381790');
+            return;
           };
         };
-
-
         member.roles.remove('762720121205555220');
 
         const embed = {
@@ -836,24 +834,13 @@ client.on('interactionCreate', async interaction => {
 
       const date = new Date(dbUser.date);
       if (dbUser) {
-        console.log(dbUser);
-        if (date !== undefined) {
-          const embed = {
-            color: 0xeff624,
-            title: 'User Email',
-            description: `<@${user.id}>'s email is **${dbUser.email}**.\nUser's full name is **${dbUser.name}**\nUser was first verified on **${date.toString()}**`,
-            timestamp: new Date(),
-          };
-          await interaction.reply({embeds: [embed],  ephemeral: true });
-        } else {
-          const embed = {
-            color: 0xeff624,
-            title: 'User Email',
-            description: `<@${user.id}>'s email is **${dbUser.email}**.\nUser's full name is **${dbUser.name}**\nDate is unavailable.`,
-            timestamp: new Date(),
-          };
-          await interaction.reply({embeds: [embed],  ephemeral: true });
+        const embed = {
+          color: 0xeff624,
+          title: 'User Email',
+          description: `<@${user.id}>'s email is \'${dbUser.email}\'.\nUser's full name is \'${dbUser.name}\'\nUser was first verified on \'${date.toString()}\'\nUser Version is \'${dbUser.version}\'`,
+          timestamp: new Date(),
         };
+        await interaction.reply({embeds: [embed],  ephemeral: true });
       } else {
         const embed = {
           color: 0xeff624,
