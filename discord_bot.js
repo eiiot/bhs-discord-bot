@@ -837,7 +837,7 @@ client.on('interactionCreate', async interaction => {
         const embed = {
           color: 0xeff624,
           title: 'User Email',
-          description: `<@${user.id}>'s email is \'${dbUser.email}\'.\nUser's full name is \'${dbUser.name}\'\nUser was first verified on \'${date.toString()}\'\nUser Version is \'${dbUser.version}\'`,
+          description: `<@${user.id}>'s email is \`${dbUser.email}\`.\nUser's full name is \`${dbUser.name}\`\nUser was first verified on \`${date.toString()}\`\nUser Version is \`${dbUser.version}\``,
           timestamp: new Date(),
         };
         await interaction.reply({embeds: [embed],  ephemeral: true });
