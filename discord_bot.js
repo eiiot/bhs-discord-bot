@@ -1225,7 +1225,7 @@ client.on('interactionCreate', async interaction => {
     },      
     {
       label: 'Tutor',
-      description: 'Contribute to the Discord and help tutor others! You will be pinged',
+      description: 'Help tutor others! You will be pinged',
       value: 'role_762755031232938075',
     },
     {
