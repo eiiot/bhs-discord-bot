@@ -316,6 +316,31 @@ Period 7: ${fireAlarms.periods[7]}\`\`\``,
     message.react('👋');
   };
 
+  if (messageContent[0].toLowerCase() ===  'ping') {
+		// buttons row with one green button one red button
+
+      const row = new Discord.MessageActionRow()
+        .addComponents(
+          new Discord.MessageButton()
+            .setCustomId('add_roles')
+            .setLabel('Add Roles')
+            .setStyle('PRIMARY'),
+          new Discord.MessageButton()
+            .setCustomId('remove_roles')
+            .setLabel('Remove Roles')
+            .setStyle('DANGER'),
+        );
+
+      const embed = {
+        color: 0xeff624,
+        title: 'Roles',
+        description: `Click the buttons below to manage roles!`,
+        timestamp: new Date(),
+      };
+
+		await message.channel.send({embeds: [embed], components: [row] });
+	};
+
   // mee6 level up messages ->
   if (message.author.id === '159985870458322944') {
 
@@ -365,7 +390,7 @@ Period 7: ${fireAlarms.periods[7]}\`\`\``,
 });
 
 client.on('interactionCreate', async interaction => {
-	if (!interaction.isCommand()) return;
+	if (!interaction.isCommand()) {
 
   if (interaction.commandName === 'verify') {
     
@@ -1188,9 +1213,113 @@ client.on('interactionCreate', async interaction => {
   };
   };
   };
+
+  };
+
+  if (interaction.isButton()) {
+    const roleMenu = [
+    {
+      label: 'Announcements',
+      description: 'Get mentioned for smaller server announcements!',
+      value: 'role_838895314814763079',
+    },      
+    {
+      label: 'Tutor',
+      description: 'Contribute to the Discord and help tutor others! You will be pinged',
+      value: 'role_762755031232938075',
+    },
+    {
+      label: 'Freshman',
+      description: 'For BHS Freshmen',
+      value: 'role_879182310073847868',
+    },
+    {
+      label: 'Sophomore',
+      description: 'For BHS Sophomores',
+      value: 'role_879182331309588540',
+    },
+    {
+      label: 'Junior',
+      description: 'For BHS Juniors',
+      value: 'role_879182350397894686',
+    },
+    {
+      label: 'Senior',
+      description: 'For BHS Seniors',
+      value: 'role_879182364977274900',
+    },   
+    {
+      label: 'she/her',
+      description: 'For those who use she/her pronouns',
+      value: 'role_880531092359225405',
+    },
+    {
+      label: 'he/him',
+      description: 'For those who use he/him pronouns',
+      value: 'role_880531048679743568',
+    },
+    {
+      label: 'they/them',
+      description: 'For those who use they/them pronouns',
+      value: 'role_880531201268514866',
+    },                                                    
+    {
+      label: 'Archive',
+      description: 'View archived channels',
+      value: 'role_892964728287145984',
+    },
+  ];
+
+
+    if (interaction.customId === 'add_roles') {
+      const row = new Discord.MessageActionRow()
+        .addComponents(
+          new Discord.MessageSelectMenu()
+            .setCustomId('role_add')
+            .setPlaceholder('Nothing selected')
+            .setMinValues(1)
+            .addOptions(roleMenu),
+        );
+      interaction.reply({ content: 'Please select the appropriate roles!', ephemeral: true, components: [row] });
+    };
+
+    if (interaction.customId === 'remove_roles') {
+      const row = new Discord.MessageActionRow()
+        .addComponents(
+          new Discord.MessageSelectMenu()
+            .setCustomId('role_remove')
+            .setPlaceholder('Nothing selected')
+            .setMinValues(1)
+            .addOptions(roleMenu),
+        );
+      interaction.reply({ content: 'Please select the appropriate roles to remove!', ephemeral: true, components: [row] });
+    };
+  };
+
+  if (interaction.isSelectMenu()) {
+    if (interaction.customId.startsWith('role')) {
+      // remove "role_" from string
+      const roleType = interaction.customId.substring(5);
+      if (roleType === 'add') {
+        interaction.values.forEach(function(value) {
+          // remove first 5 chars from string
+          interaction.member.roles.add(value.slice(5));
+        });
+        await interaction.update({ content: 'Roles added!', ephemeral: true, components: []});
+      };
+
+      if (roleType === 'remove') {
+        interaction.values.forEach(function(value) {
+          // remove first 5 chars from string
+          interaction.member.roles.remove(value.slice(5));
+        });
+        await interaction.update({ content: 'Roles removed!', ephemeral: true, components: []});
+      };
+    };
+  };
 });
 
-// delete empty voice channels in a catagory
+// delete empty voice channels in a category
 client.on('voiceStateUpdate', async (oldState, newState) => {
   // check if oldState.channel is not null
   if (oldState.channel != null) {
