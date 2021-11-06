@@ -316,7 +316,7 @@ Period 7: ${fireAlarms.periods[7]}\`\`\``,
     message.react('👋');
   };
 
-  if (messageContent[0].toLowerCase() ===  'ping') {
+  if (messageContent[0].toLowerCase() ===  'ping' && message.author.id === client.application?.owner.id) {
 		// buttons row with one green button one red button
 
       const row = new Discord.MessageActionRow()
