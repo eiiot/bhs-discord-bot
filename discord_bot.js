@@ -384,6 +384,8 @@ Period 7: ${fireAlarms.periods[7]}\`\`\``,
 
       console.log('User levels updated! Took:');
       console.timeEnd('processTimer');
+    }).catch(function(error) {
+      console.log(error);
     });
   };
      
