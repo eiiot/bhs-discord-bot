@@ -229,47 +229,47 @@ client.on('messageCreate', async message => {
   };
 	};
 
-  if (message.content.startsWith('.firealarm') && message.author.id === client.application?.owner.id) {
-    const args = message.content.trim().split(' ');
-    const period = args[1];
+//   if (message.content.startsWith('.firealarm') && message.author.id === client.application?.owner.id) {
+//     const args = message.content.trim().split(' ');
+//     const period = args[1];
 
-    if (period == undefined) {
-      message.reply('Please use the following format: `.firealarm <period>`');
-      return;
-    };
+//     if (period == undefined) {
+//       message.reply('Please use the following format: `.firealarm <period>`');
+//       return;
+//     };
 
-    const fireAlarms = JSON.parse(fs.readFileSync('fireAlarms.json'))
+//     const fireAlarms = JSON.parse(fs.readFileSync('fireAlarms.json'))
 
-    fireAlarms.total++;
+//     fireAlarms.total++;
 
-    fireAlarms.lastPull = Date.now();
+//     fireAlarms.lastPull = Date.now();
 
-    fireAlarms.periods[period]++;
+//     fireAlarms.periods[period]++;
 
-    const lastPull = new Date(fireAlarms.lastPull);
+//     const lastPull = new Date(fireAlarms.lastPull);
 
-    const embed = {
-      color: 0xeff624,
-      title: 'Fire Alarms',
-      description: `**Total: ${fireAlarms.total}**
-      \`\`\`Period 0: ${fireAlarms.periods[0]}
-Period 1: ${fireAlarms.periods[1]}
-Period 2: ${fireAlarms.periods[2]}
-Period 3: ${fireAlarms.periods[3]}
-Period 4: ${fireAlarms.periods[4]}
-Period 5: ${fireAlarms.periods[5]}
-Period 6: ${fireAlarms.periods[6]}
-Period 7: ${fireAlarms.periods[7]}\`\`\``,
-      timestamp: new Date(lastPull),
-    };
+//     const embed = {
+//       color: 0xeff624,
+//       title: 'Fire Alarms',
+//       description: `**Total: ${fireAlarms.total}**
+//       \`\`\`Period 0: ${fireAlarms.periods[0]}
+// Period 1: ${fireAlarms.periods[1]}
+// Period 2: ${fireAlarms.periods[2]}
+// Period 3: ${fireAlarms.periods[3]}
+// Period 4: ${fireAlarms.periods[4]}
+// Period 5: ${fireAlarms.periods[5]}
+// Period 6: ${fireAlarms.periods[6]}
+// Period 7: ${fireAlarms.periods[7]}\`\`\``,
+//       timestamp: new Date(lastPull),
+//     };
 
-    const webhook = new Discord.WebhookClient({ url: process.env.FIRE_ALARM_WEBHOOK });
+//     const webhook = new Discord.WebhookClient({ url: process.env.FIRE_ALARM_WEBHOOK });
 
-    webhook.editMessage('900173448486191155', { embeds: [embed] });
-    // webhook.send({ embeds: [embed] });
+//     webhook.editMessage('900173448486191155', { embeds: [embed] });
+//     // webhook.send({ embeds: [embed] });
 
-    fs.writeFileSync('fireAlarms.json', JSON.stringify(fireAlarms));
-	};
+//     fs.writeFileSync('fireAlarms.json', JSON.stringify(fireAlarms));
+// 	};
 
   if (messageContent[0].toLowerCase() === '.studyroom') {
     const embed = {
