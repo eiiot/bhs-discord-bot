@@ -344,15 +344,11 @@ client.on('messageCreate', async message => {
   // mee6 level up messages ->
   if (message.author.id === '159985870458322944') {
 
-    axios.get('https://mee6.xyz/api/plugins/levels/leaderboard/762412666521124866').then(async function(response) {
+    axios.get('https://mee6.xyz/api/plugins/levels/leaderboard/762412666521124866')
+    .then(async function(response) {
       // convert json to array
       const responseArray = response.data;
-      console.log(responseArray);
       const playersArray = responseArray.players;
-
-      console.log('Updating user levels!');
-
-      console.time('processTimer');
     
       for (let i = 0; i < playersArray.length; i++) {
         if (playersArray[i].level >= 10) {
@@ -381,9 +377,6 @@ client.on('messageCreate', async message => {
           };
         };
       };
-
-      console.log('User levels updated! Took:');
-      console.timeEnd('processTimer');
     }).catch(function(error) {
       console.log(error);
     });
@@ -1064,16 +1057,12 @@ client.on('interactionCreate', async interaction => {
       
       axios.get('https://mee6.xyz/api/plugins/levels/leaderboard/762412666521124866').then(function(response) {
         const responseArray = response.data;
-        console.log(responseArray);
         const playersArray = responseArray.players;
-
-        console.log(playersArray);
 
         // format an embed with the leaderboard information
         var leaderboardDescription = '';
         for (var i = 0; i < 15 && i < playersArray.length; i++) {
           leaderboardDescription += `${i+1}. <@${playersArray[i].id}> - **Level ${playersArray[i].level}** - *${playersArray[i].message_count} messages*\n`;
-          console.log(leaderboardDescription);
         };
           
         const embed = {
@@ -1093,6 +1082,8 @@ client.on('interactionCreate', async interaction => {
         );
 
         interaction.reply({ embeds: [embed], components: [row] });
+      }).catch(function(error) {
+        console.log(error);
       });
     }
 
