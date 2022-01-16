@@ -3,7 +3,6 @@ import express from 'express';
 import admin from 'firebase-admin';
 import serviceAccountKey from './serviceAccountKey.js';
 import dotenv from 'dotenv';
-import sgMail from '@sendgrid/mail';
 import axios from 'axios';
 import fs from 'fs';
 import {
@@ -36,8 +35,6 @@ const client = new Discord.Client({
 // ? SETUP IMPORTS ? //
 
 dotenv.config();
-
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const shClient = new ShlinkClient({
   url: 'https://eliot.sh',
