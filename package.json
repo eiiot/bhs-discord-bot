@@ -13,7 +13,8 @@
     "node-forge": ">=1.0.0",
     "follow-redirects": ">=1.14.7",
     "shlink-client": "^1.0.1",
-    "tar": ">=6.1.9"
+    "tar": ">=6.1.9",
+    "node-fetch": ">=2.6.7"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
