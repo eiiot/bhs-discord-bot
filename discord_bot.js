@@ -233,48 +233,6 @@ client.on('messageCreate', async message => {
     };
   };
 
-  //   if (message.content.startsWith('.firealarm') && message.author.id === client.application?.owner.id) {
-  //     const args = message.content.trim().split(' ');
-  //     const period = args[1];
-
-  //     if (period == undefined) {
-  //       message.reply('Please use the following format: `.firealarm <period>`');
-  //       return;
-  //     };
-
-  //     const fireAlarms = JSON.parse(fs.readFileSync('fireAlarms.json'))
-
-  //     fireAlarms.total++;
-
-  //     fireAlarms.lastPull = Date.now();
-
-  //     fireAlarms.periods[period]++;
-
-  //     const lastPull = new Date(fireAlarms.lastPull);
-
-  //     const embed = {
-  //       color: 0xeff624,
-  //       title: 'Fire Alarms',
-  //       description: `**Total: ${fireAlarms.total}**
-  //       \`\`\`Period 0: ${fireAlarms.periods[0]}
-  // Period 1: ${fireAlarms.periods[1]}
-  // Period 2: ${fireAlarms.periods[2]}
-  // Period 3: ${fireAlarms.periods[3]}
-  // Period 4: ${fireAlarms.periods[4]}
-  // Period 5: ${fireAlarms.periods[5]}
-  // Period 6: ${fireAlarms.periods[6]}
-  // Period 7: ${fireAlarms.periods[7]}\`\`\``,
-  //       timestamp: new Date(lastPull),
-  //     };
-
-  //     const webhook = new Discord.WebhookClient({ url: process.env.FIRE_ALARM_WEBHOOK });
-
-  //     webhook.editMessage('900173448486191155', { embeds: [embed] });
-  //     // webhook.send({ embeds: [embed] });
-
-  //     fs.writeFileSync('fireAlarms.json', JSON.stringify(fireAlarms));
-  // 	};
-
   if (messageContent[0].toLowerCase() === '.studyroom') {
     const embed = {
       color: 0xeff624,
@@ -391,6 +349,53 @@ client.on('messageCreate', async message => {
       });
   };
 
+  // if the channel is #suggestions
+  if (message.channel.id === '839965498291519538') {
+    var suggestion = message.content;
+
+    // delete message
+    message.delete();
+
+    const member = await message.guild.members.fetch(message.author.id);
+
+    const embed = {
+      color: 0xeff624,
+      thumbnail: {
+        url: message.author.avatarURL(),
+      },
+      title: member.nickname,
+      description: suggestion,
+      timestamp: new Date(),
+    };
+
+    const channel = await message.guild.channels.fetch('839965498291519538');
+
+    const suggestionMsg = await channel.send({
+      embeds: [embed]
+    });
+
+    suggestionMsg.react(interaction.guild.emojis.cache.get('879376341613568040'));
+    suggestionMsg.react(interaction.guild.emojis.cache.get('879376341630341150'));
+
+    // start thread from message
+
+    suggestionMsg.startThread({
+      name: suggestion.substring(0, 99),
+      autoArchiveDuration: 4320,
+      reason: suggestion
+    });
+
+    const replyEmbed = {
+      color: 0xeff624,
+      title: 'Suggestion Submitted!',
+      description: `Your suggestion has been submitted! You can view it in <#839965498291519538>`,
+      timestamp: new Date(),
+    };
+
+    user.send({
+      embeds: [replyEmbed]
+    });
+  };
 });
 
 client.on('interactionCreate', async interaction => {
@@ -1315,7 +1320,7 @@ expressApp.get('/discord', async (req, res) => {
 
     // otherwise verify user and add to database
     let member;
-    
+
     try {
       member = await client.guilds.cache.get('762412666521124866').members.fetch(discordUserID)
       member.roles.add('762720121205555220');
