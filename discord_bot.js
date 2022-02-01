@@ -1314,8 +1314,10 @@ expressApp.get('/discord', async (req, res) => {
     };
 
     // otherwise verify user and add to database
+    let member;
+    
     try {
-      const member = await client.guilds.cache.get('762412666521124866').members.fetch(discordUserID)
+      member = await client.guilds.cache.get('762412666521124866').members.fetch(discordUserID)
       member.roles.add('762720121205555220');
     } catch (e) {
       console.log(e);
@@ -1328,7 +1330,14 @@ expressApp.get('/discord', async (req, res) => {
 
     console.log('Changing Username');
 
-    const userNickname = await member.setNickname(userName);
+    let userNickname;
+
+    try {
+      userNickname = await member.setNickname(userName);
+    } catch (e) {
+      console.log(e);
+      throw new Error('discord_error');
+    };
 
     console.log(`Changed nickname to ${userNickname.nickname}`);
 
