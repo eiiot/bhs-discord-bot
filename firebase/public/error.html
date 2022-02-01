@@ -50,7 +50,7 @@
         const errorCode = urlParams.get('error');
 
         if (errorCode === 'discord_error') {
-          errorHtml.innerHTML = 'There was an error with your Discord account. Please try again.';
+          errorHtml.innerHTML = 'There was an error with your Discord account. Make sure you\'re using the correct account, and try again.';
         } else if (errorCode === 'google_error') {
           errorHtml.innerHTML = 'There was an error with your Google account. Please try again.';
         } else if (errorCode === 'invalid_email') {

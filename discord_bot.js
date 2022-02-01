@@ -1314,8 +1314,13 @@ expressApp.get('/discord', async (req, res) => {
     };
 
     // otherwise verify user and add to database
-    const member = await client.guilds.cache.get('762412666521124866').members.fetch(discordUserID);
-    member.roles.add('762720121205555220');
+    try {
+      const member = await client.guilds.cache.get('762412666521124866').members.fetch(discordUserID)
+      member.roles.add('762720121205555220');
+    } catch (e) {
+      console.log(e);
+      throw new Error('invalid_email');
+    };
 
     if (userEmail.endsWith('@berkeley.net')) {
       member.roles.add('765670230747381790');
