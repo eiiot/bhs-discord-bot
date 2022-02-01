@@ -350,14 +350,11 @@ client.on('messageCreate', async message => {
   };
 
   // if the channel is #suggestions
-  if (message.channel.id === '839965498291519538') {
+  if (message.channel.id === '839965498291519538' && message.author.bot === false) {
     var suggestion = message.content;
 
-    // delete message
-    message.delete();
-
     const member = await message.guild.members.fetch(message.author.id);
-
+    
     const embed = {
       color: 0xeff624,
       thumbnail: {
@@ -374,8 +371,8 @@ client.on('messageCreate', async message => {
       embeds: [embed]
     });
 
-    suggestionMsg.react(interaction.guild.emojis.cache.get('879376341613568040'));
-    suggestionMsg.react(interaction.guild.emojis.cache.get('879376341630341150'));
+    suggestionMsg.react(message.guild.emojis.cache.get('879376341613568040'));
+    suggestionMsg.react(message.guild.emojis.cache.get('879376341630341150'));
 
     // start thread from message
 
@@ -392,9 +389,12 @@ client.on('messageCreate', async message => {
       timestamp: new Date(),
     };
 
-    user.send({
+    message.author.send({
       embeds: [replyEmbed]
     });
+
+    // delete message
+    message.delete();
   };
 });
 
