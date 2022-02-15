@@ -1033,23 +1033,48 @@ client.on('interactionCreate', async interaction => {
       },
       {
         label: 'Freshman',
-        description: 'For BHS Freshmen',
+        description: 'BHS Freshmen',
         value: 'role_879182310073847868',
       },
       {
         label: 'Sophomore',
-        description: 'For BHS Sophomores',
+        description: 'BHS Sophomores',
         value: 'role_879182331309588540',
       },
       {
         label: 'Junior',
-        description: 'For BHS Juniors',
+        description: 'BHS Juniors',
         value: 'role_879182350397894686',
       },
       {
         label: 'Senior',
-        description: 'For BHS Seniors',
+        description: 'BHS Seniors',
         value: 'role_879182364977274900',
+      },
+      {
+        label: 'AC',
+        description: 'Academic Choice',
+        value: 'role_942965244542722048',
+      },
+      {
+        label: 'BIHS',
+        description: 'Berkeley International High School',
+        value: 'role_942965247768137778',
+      },
+      {
+        label: 'AHA',
+        description: 'Arts and Humanities Academy',
+        value: 'role_942965161315168368',
+      },
+      {
+        label: 'CAS',
+        description: 'Communication Arts and Sciences',
+        value: 'role_942965237966077973',
+      },
+      {
+        label: 'AMPS',
+        description: 'Academy of Medicine and Public Service',
+        value: 'role_942965257909981225',
       },
       {
         label: 'she/her',
