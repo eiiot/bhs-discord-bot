@@ -182,6 +182,34 @@ client.on('messageCreate', async message => {
     message.reply("Slash Command ID: `" + command[0] + "`");
   };
 
+  if (messageContent[0].toLowerCase() === '.slash_command_delete' && message.author.id === client.application?.owner.id) {
+    if (messageContent.length < 2) {
+      message.reply('Please use the following format: `.slash_command_delete <command name>`');
+      return;
+    };
+
+    const commands = await client.guilds.cache.get(message.guild.id)?.commands.fetch();
+
+    // convert commands to array
+    const commandArray = [...commands.entries()];
+    console.log(commandArray);
+    // find the command using the name
+    const command = commandArray.find(command => command[1].name === messageContent[1]);
+
+    console.log(command);
+
+    // if command is not found reply with error
+
+    if (command === undefined) {
+      message.reply('Command not found');
+      return;
+    };
+
+    // delete the command
+    await command[1].delete();
+    message.reply('Command deleted');
+  };
+
   if (messageContent[0].toLowerCase() === '.react_with_heart' && message.author.id === client.application?.owner.id) {
     message.delete();
 
@@ -310,43 +338,6 @@ client.on('messageCreate', async message => {
       embeds: [embed],
       components: [row]
     });
-  };
-
-  // mee6 level up messages ->
-  if (message.author.id === '159985870458322944') {
-
-    axios.get('https://mee6.xyz/api/plugins/levels/leaderboard/762412666521124866')
-      .then(async function(response) {
-        // convert json to array
-        const responseArray = response.data;
-        const playersArray = responseArray.players;
-
-        for (let i = 0; i < playersArray.length; i++) {
-          if (playersArray[i].level >= 10) {
-            // find role by id
-            const role = message.guild.roles.cache.find(role => role.id === '891136958951194717');
-
-            const member = message.guild.members.cache.find(member => member.id === playersArray[i].id);
-
-            // add role to user
-            member.roles.add(role).catch((err) => {
-              console.log(err)
-            });
-          } else if (playersArray[i].level < 10) {
-            // find role by id
-            const role = message.guild.roles.cache.find(role => role.id === '891136958951194717');
-
-            const member = message.guild.members.cache.find(member => member.id === playersArray[i].id);
-
-            // remove role from user
-            member.roles.remove(role).catch((err) => {
-              console.log(err)
-            });
-          };
-        };
-      }).catch(function(error) {
-        console.log(error);
-      });
   };
 
   // if the channel is #suggestions
