@@ -341,52 +341,52 @@ client.on('messageCreate', async message => {
   };
 
   // if the channel is #suggestions
-  if (message.channel.id === '839965498291519538' && message.author.bot === false) {
-    var suggestion = message.content;
+  // if (message.channel.id === '839965498291519538' && message.author.bot === false) {
+  //   var suggestion = message.content;
 
-    const member = await message.guild.members.fetch(message.author.id);
+  //   const member = await message.guild.members.fetch(message.author.id);
     
-    const embed = {
-      color: 0xeff624,
-      thumbnail: {
-        url: message.author.avatarURL(),
-      },
-      title: member.nickname,
-      description: suggestion,
-      timestamp: new Date(),
-    };
+  //   const embed = {
+  //     color: 0xeff624,
+  //     thumbnail: {
+  //       url: message.author.avatarURL(),
+  //     },
+  //     title: member.nickname,
+  //     description: suggestion,
+  //     timestamp: new Date(),
+  //   };
 
-    const channel = await message.guild.channels.fetch('839965498291519538');
+  //   const channel = await message.guild.channels.fetch('839965498291519538');
 
-    const suggestionMsg = await channel.send({
-      embeds: [embed]
-    });
+  //   const suggestionMsg = await channel.send({
+  //     embeds: [embed]
+  //   });
 
-    suggestionMsg.react(message.guild.emojis.cache.get('879376341613568040'));
-    suggestionMsg.react(message.guild.emojis.cache.get('879376341630341150'));
+  //   suggestionMsg.react(message.guild.emojis.cache.get('879376341613568040'));
+  //   suggestionMsg.react(message.guild.emojis.cache.get('879376341630341150'));
 
-    // start thread from message
+  //   // start thread from message
 
-    suggestionMsg.startThread({
-      name: suggestion.substring(0, 99),
-      autoArchiveDuration: 4320,
-      reason: suggestion
-    });
+  //   suggestionMsg.startThread({
+  //     name: suggestion.substring(0, 99),
+  //     autoArchiveDuration: 4320,
+  //     reason: suggestion
+  //   });
 
-    const replyEmbed = {
-      color: 0xeff624,
-      title: 'Suggestion Submitted!',
-      description: `Your suggestion has been submitted! You can view it in <#839965498291519538>`,
-      timestamp: new Date(),
-    };
+  //   const replyEmbed = {
+  //     color: 0xeff624,
+  //     title: 'Suggestion Submitted!',
+  //     description: `Your suggestion has been submitted! You can view it in <#839965498291519538>`,
+  //     timestamp: new Date(),
+  //   };
 
-    message.author.send({
-      embeds: [replyEmbed]
-    });
+  //   message.author.send({
+  //     embeds: [replyEmbed]
+  //   });
 
-    // delete message
-    message.delete();
-  };
+  //   // delete message
+  //   message.delete();
+  // };
 });
 
 client.on('interactionCreate', async interaction => {
@@ -767,49 +767,49 @@ client.on('interactionCreate', async interaction => {
       });
     };
 
-    if (interaction.commandName === 'suggest') {
-      var suggestion = interaction.options.get('suggestion').value;
+    // if (interaction.commandName === 'suggest') {
+    //   var suggestion = interaction.options.get('suggestion').value;
 
-      const member = await interaction.guild.members.fetch(interaction.user.id);
+    //   const member = await interaction.guild.members.fetch(interaction.user.id);
 
-      const embed = {
-        color: 0xeff624,
-        thumbnail: {
-          url: interaction.user.avatarURL(),
-        },
-        title: member.nickname,
-        description: suggestion,
-        timestamp: new Date(),
-      };
+    //   const embed = {
+    //     color: 0xeff624,
+    //     thumbnail: {
+    //       url: interaction.user.avatarURL(),
+    //     },
+    //     title: member.nickname,
+    //     description: suggestion,
+    //     timestamp: new Date(),
+    //   };
 
-      const channel = await interaction.guild.channels.fetch('839965498291519538');
+    //   const channel = await interaction.guild.channels.fetch('839965498291519538');
 
-      const suggestionMsg = await channel.send({
-        embeds: [embed]
-      });
+    //   const suggestionMsg = await channel.send({
+    //     embeds: [embed]
+    //   });
 
-      suggestionMsg.react(interaction.guild.emojis.cache.get('879376341613568040'));
-      suggestionMsg.react(interaction.guild.emojis.cache.get('879376341630341150'));
+    //   suggestionMsg.react(interaction.guild.emojis.cache.get('879376341613568040'));
+    //   suggestionMsg.react(interaction.guild.emojis.cache.get('879376341630341150'));
 
-      // start thread from message
+    //   // start thread from message
 
-      suggestionMsg.startThread({
-        name: suggestion.substring(0, 99),
-        autoArchiveDuration: 4320,
-        reason: suggestion
-      });
+    //   suggestionMsg.startThread({
+    //     name: suggestion.substring(0, 99),
+    //     autoArchiveDuration: 4320,
+    //     reason: suggestion
+    //   });
 
-      const replyEmbed = {
-        color: 0xeff624,
-        title: 'Suggestion Submitted!',
-        description: `Your suggestion has been submitted! You can view it in <#839965498291519538>`,
-        timestamp: new Date(),
-      };
+    //   const replyEmbed = {
+    //     color: 0xeff624,
+    //     title: 'Suggestion Submitted!',
+    //     description: `Your suggestion has been submitted! You can view it in <#839965498291519538>`,
+    //     timestamp: new Date(),
+    //   };
 
-      interaction.reply({
-        embeds: [replyEmbed]
-      });
-    };
+    //   interaction.reply({
+    //     embeds: [replyEmbed]
+    //   });
+    // };
 
     if (interaction.commandName === 'stats') {
       // server statistics
