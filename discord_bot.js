@@ -452,15 +452,14 @@ client.on("interactionCreate", async (interaction) => {
               const embed = {
                 color: 0xeff624,
                 title: "Verification",
-                description: `${user.tag} is not verified.`,
+                description: `${user.tag} is not verified. Attempting to remove from database anyways`,
                 timestamp: new Date(),
               };
+
               await interaction.reply({
                 embeds: [embed],
                 ephemeral: true,
               });
-
-              console.log(user.id);
 
               console.log(user.id);
 
