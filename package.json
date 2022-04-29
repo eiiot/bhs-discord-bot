@@ -13,7 +13,7 @@
     "shlink-client": "^1.0.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node ./index.ts"
   },
   "repository": {
     "type": "git",
