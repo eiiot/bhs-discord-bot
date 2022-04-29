@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Berkeley High Discord</title>
 
     <!-- update the version number as needed -->
@@ -16,17 +16,68 @@
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
     <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #738adb; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; cursor: pointer; display: none;}
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+      body {
+        background: #eceff1;
+        color: rgba(0, 0, 0, 0.87);
+        font-family: Roboto, Helvetica, Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      #message {
+        background: white;
+        max-width: 360px;
+        margin: 100px auto 16px;
+        padding: 32px 24px;
+        border-radius: 3px;
+      }
+      #message h2 {
+        color: #ffa100;
+        font-weight: bold;
+        font-size: 16px;
+        margin: 0 0 8px;
+      }
+      #message h1 {
+        font-size: 22px;
+        font-weight: 300;
+        color: rgba(0, 0, 0, 0.6);
+        margin: 0 0 16px;
+      }
+      #message p {
+        line-height: 140%;
+        margin: 16px 0 24px;
+        font-size: 14px;
+      }
+      #message a {
+        display: block;
+        text-align: center;
+        background: #738adb;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: white;
+        padding: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: none;
+      }
+      #message,
+      #message a {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+      }
+      #load {
+        color: rgba(0, 0, 0, 0.4);
+        text-align: center;
+        font-size: 13px;
+      }
       @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
+        body,
+        #message {
+          margin-top: 0;
+          background: white;
+          box-shadow: none;
+        }
+        body {
+          border-top: 16px solid #ffa100;
+        }
       }
     </style>
   </head>
@@ -38,17 +89,16 @@
     </div>
 
     <script>
-      console.log('Loading...');
-      // Redirect if page is Safari
-      document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOMContentLoaded');
-        
+      console.log("Loading...");
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("DOMContentLoaded");
+
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
 
-        const titleHtml = document.querySelector('#title');
-        const descriptionHtml = document.querySelector('#description');
-        const buttonHtml = document.querySelector('#button');
+        const titleHtml = document.querySelector("#title");
+        const descriptionHtml = document.querySelector("#description");
+        const buttonHtml = document.querySelector("#button");
 
         // if (urlParams.logout) {
         //   console.log('Logging Out')
@@ -56,55 +106,64 @@
         //   document.location.href = '/';
         // };
 
-        console.log('Init Auth Provider');
+        console.log("Init Auth Provider");
 
-        var provider = new firebase.auth.GoogleAuthProvider();
-            provider.addScope("profile");
-            provider.addScope("email");
-            provider.setCustomParameters({
-              prompt: 'select_account',
-              hd: 'students.berkeley.net'
-            });
+        let provider = new firebase.auth.GoogleAuthProvider();
+        provider.addScope("profile");
+        provider.addScope("email");
+        provider.setCustomParameters({
+          prompt: "select_account",
+          hd: "students.berkeley.net",
+        });
 
-        console.log('Created provider')
+        console.log("Created provider");
 
-        firebase.auth().onAuthStateChanged(function(user) {
-          console.log('Checking onAuthStateChanged');
+        firebase.auth().onAuthStateChanged(function (user) {
+          console.log("Checking onAuthStateChanged");
           if (user) {
-            console.log('User Exists')
+            console.log("User Exists");
             window.user = user;
 
-            const discordCode = urlParams.get('code');
+            const discordCode = urlParams.get("code");
 
             if (discordCode !== null) {
               //change the title and description
               titleHtml.innerHTML = "Redirecting!";
-              descriptionHtml.innerHTML = "Your roles are being verified and added, please wait!";
+              descriptionHtml.innerHTML =
+                "Your roles are being verified and added, please wait!";
               buttonHtml.style.display = "none";
 
-
-              user.getIdToken(false).then(function(idToken) {
-                buttonHtml.innerHTML = "Click to manually redirect";
-                buttonHtml.href = `http://api.bhs.sh/discord?discordCode=${discordCode}&googleToken=${idToken}`;
-                buttonHtml.style.display = "block";
-                // Send token to your backend via HTTPS
-                window.location.href = `http://api.bhs.sh/discord?discordCode=${discordCode}&googleToken=${idToken}`;
-              }).catch(function(error) {
-                // Handle error
-                console.log(error);
-              });
+              user
+                .getIdToken(false)
+                .then(function (idToken) {
+                  buttonHtml.innerHTML = "Click to manually redirect";
+                  buttonHtml.href = `http://api.bhs.sh/discord?discordCode=${discordCode}&googleToken=${idToken}`;
+                  buttonHtml.style.display = "block";
+                  // Send token to your backend via HTTPS
+                  window.location.href = `http://api.bhs.sh/discord?discordCode=${discordCode}&googleToken=${idToken}`;
+                })
+                .catch(function (error) {
+                  // Handle error
+                  console.log(error);
+                });
             } else {
-              console.log('User does not exist')
+              console.log("User does not exist");
               // if email ends with berkeley.net, redirect to discord
-              if (user.email.endsWith(".berkeley.net") || user.email.endsWith("@berkeley.net")) {
+              if (
+                user.email.endsWith(".berkeley.net") ||
+                user.email.endsWith("@berkeley.net")
+              ) {
                 //change the title and description
                 titleHtml.innerHTML = "Redirecting!";
-                descriptionHtml.innerHTML = "You are being redirected to Discord, to authenticate your account!";
+                descriptionHtml.innerHTML =
+                  "You are being redirected to Discord, to authenticate your account!";
                 buttonHtml.innerHTML = "Click to manually redirect";
-                buttonHtml.href = "https://discord.com/api/oauth2/authorize?client_id=837783608101699714&redirect_uri=https%3A%2F%2Fauth.bhs.sh&response_type=code&scope=identify";
+                buttonHtml.href =
+                  "https://discord.com/api/oauth2/authorize?client_id=837783608101699714&redirect_uri=https%3A%2F%2Fauth.bhs.sh&response_type=code&scope=identify";
                 buttonHtml.style.display = "block";
                 // redirect user to discord
-                window.location.href = "https://discord.com/api/oauth2/authorize?client_id=837783608101699714&redirect_uri=https%3A%2F%2Fauth.bhs.sh&response_type=code&scope=identify";
+                window.location.href =
+                  "https://discord.com/api/oauth2/authorize?client_id=837783608101699714&redirect_uri=https%3A%2F%2Fauth.bhs.sh&response_type=code&scope=identify";
               } else {
                 //change the title and description
                 titleHtml.innerHTML = "Error";
@@ -118,19 +177,20 @@
                 // otherwise, change the message to ask for a BUSD email
                 window.location.href = "/error?error=invalid_email";
                 return false;
-              };
-            };
+              }
+            }
           } else {
             //change the title and description
             titleHtml.innerHTML = "Verify for the BHS Discord!";
-            descriptionHtml.innerHTML = "Verify for the Berkeley High Discord using the button below. Please use your BUSD-issued email!";
+            descriptionHtml.innerHTML =
+              "Verify for the Berkeley High Discord using the button below. Please use your BUSD-issued email!";
             button.innerHTML = "Verify";
-            buttonHtml.style.display = 'block';
+            buttonHtml.style.display = "block";
             // change onclick
-            buttonHtml.onclick = function() {
+            buttonHtml.onclick = function () {
               firebase.auth().signInWithRedirect(provider);
             };
-          };
+          }
         });
       });
     </script>
