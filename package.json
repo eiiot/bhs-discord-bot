@@ -13,7 +13,7 @@
     "shlink-client": "^1.0.1"
   },
   "scripts": {
-    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node ./index.ts"
+    "start": "node --experimental-specifier-resolution=node index.js"
   },
   "repository": {
     "type": "git",
