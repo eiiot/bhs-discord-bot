@@ -137,7 +137,7 @@ const authServer = (client: Client, admin, app) => {
         errorType = "unknown_error";
       }
 
-      res.redirect(`https://auth.bhs.sh/error?error=${errorType}`);
+      res.redirect(`https://auth.bhs.sh?error=${errorType}`);
       return;
     }
   });
