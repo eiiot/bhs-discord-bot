@@ -102,7 +102,7 @@ const authServer = (client, admin, app) => {
             else {
                 errorType = "unknown_error";
             }
-            res.redirect(`https://auth.bhs.sh/error?error=${errorType}`);
+            res.redirect(`https://auth.bhs.sh?error=${errorType}`);
             return;
         }
     });
