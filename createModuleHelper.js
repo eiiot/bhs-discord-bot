@@ -26,12 +26,12 @@ const fileText = `export default {
   ]
 }`;
 
-fs.writeFileSync(`./modules/commands/${commandName}.ts`, fileText);
+fs.writeFileSync(`./src/modules/commands/${commandName}.ts`, fileText);
 
 // append the new command to the index.ts file
-const indexText = fs.readFileSync("./modules/commands/index.ts", "utf8");
+const indexText = fs.readFileSync("./src/modules/commands/index.ts", "utf8");
 fs.writeFileSync(
-  "./modules/commands/index.ts",
+  "./src/modules/commands/index.ts",
   indexText +
     `\nexport { default as ${commandName} } from "./${commandName}.ts";`
 );

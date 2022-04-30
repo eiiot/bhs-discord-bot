@@ -1,7 +1,7 @@
 import Discord from "discord.js";
 import dotenv from "dotenv";
 import admin from "firebase-admin";
-import serviceAccountKey from "./serviceAccountKey.js";
+import serviceAccountKey from "../serviceAccountKey.js";
 import { help, user, studyroom, stats, archive, leaderboard, short, } from "./modules/commands";
 import authServer from "./modules/authServer.js";
 import suggestionMessages from "./modules/suggestionMessages";

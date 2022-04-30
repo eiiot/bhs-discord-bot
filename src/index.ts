@@ -1,7 +1,7 @@
 import Discord, { TextChannel } from "discord.js";
 import dotenv from "dotenv";
 import admin, { ServiceAccount } from "firebase-admin";
-import serviceAccountKey from "./serviceAccountKey.js";
+import serviceAccountKey from "../serviceAccountKey.js";
 
 import {
   help,

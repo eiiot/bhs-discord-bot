@@ -1,0 +1,3 @@
+[submodule "bhs-discord-bot-firebase"]
+	path = bhs-discord-bot-firebase
+	url = https://github.com/eIiot/bhs-discord-bot-firebase.git
