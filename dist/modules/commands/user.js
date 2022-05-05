@@ -1,3 +1,4 @@
+import { MessageActionRow, MessageButton } from "discord.js";
 export default {
     name: "user",
     description: "Manage a guild member",
@@ -42,6 +43,7 @@ export default {
         // load database
         const db = app.firestore();
         if (action === "unverify") {
+            // unverify user
             if (member == undefined) {
                 // if the member does not exist
                 interaction.reply("This user is not a member of the server.");
@@ -97,17 +99,57 @@ export default {
                 return;
             }
             else {
-                const embed = {
-                    color: "#DC2626",
-                    title: "Error",
-                    description: `${member.displayName} is not in the database.`,
-                    timestamp: new Date(),
-                };
-                await interaction.reply({
-                    embeds: [embed],
-                    ephemeral: true,
+                // remove the student role from the user anyways
+                member.roles
+                    .remove("762720121205555220")
+                    .then(() => {
+                    // dm the user
+                    const dmChannel = member.createDM();
+                    const dmEmbed = {
+                        color: "#22C55E",
+                        title: "Request to reverify",
+                        description: `You have been unverified in the BHS Discord server, as your account did not exist in the database. Dont worry! You can re-verify by visiting <#787039874384396329>, or clicking the button below.`,
+                        timestamp: new Date(),
+                    };
+                    // create the button interaction
+                    const row = new MessageActionRow().addComponents(new MessageButton()
+                        .setStyle("LINK")
+                        .setLabel("Reverify")
+                        .setURL(`https://auth.bhs.sh`));
+                    dmChannel
+                        .send({
+                        embeds: [dmEmbed],
+                        components: [row],
+                    })
+                        .catch((err) => {
+                        console.log(err);
+                    });
+                    const embed = {
+                        color: "#DC2626",
+                        title: "User unverified",
+                        description: `${member.displayName} does not exist in the database. Their student role has been removed.`,
+                        timestamp: new Date(),
+                    };
+                    interaction.reply({
+                        embeds: [embed],
+                        ephemeral: true,
+                    });
+                    return;
+                })
+                    .catch((err) => {
+                    console.log(err);
+                    const embed = {
+                        color: "#DC2626",
+                        title: "Error",
+                        description: `An error occurred while trying to remove the \`student\` role from ${member.displayName}.`,
+                        timestamp: new Date(),
+                    };
+                    interaction.reply({
+                        embeds: [embed],
+                        ephemeral: true,
+                    });
+                    return;
                 });
-                return;
             }
         }
         if (action == "verify") {

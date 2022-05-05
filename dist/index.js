@@ -5,8 +5,17 @@ import serviceAccountKey from "../serviceAccountKey.js";
 import { help, user, studyroom, stats, archive, leaderboard, short, } from "./modules/commands";
 import authServer from "./modules/authServer.js";
 import suggestionMessages from "./modules/suggestionMessages";
+if (!serviceAccountKey) {
+    console.error("No service account key found. Are you sure you imported seriveAccountKey.js?");
+    process.exit(1);
+}
 // ? SETUP IMPORTS ? //
 dotenv.config();
+// exit with error if env variables are not set
+if (!process.env.BOT_TOKEN) {
+    console.error("No BOT_TOKEN env variable set. Are you sure you imported the .env file?");
+    process.exit(1);
+}
 const client = new Discord.Client({
     intents: [
         "GUILDS",
