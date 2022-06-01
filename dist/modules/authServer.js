@@ -106,8 +106,8 @@ const authServer = (client, admin, app) => {
             return;
         }
     });
-    expressApp.listen(3000, () => {
-        console.log(`Listening on port 3000`);
+    expressApp.listen(80, () => {
+        console.log(`Listening on port ${80}`);
     });
 };
 export default authServer;
