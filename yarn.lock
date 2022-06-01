@@ -734,7 +734,7 @@ finalhandler@1.2.0:
     statuses "2.0.1"
     unpipe "~1.0.0"
 
-firebase-admin@^10.1.0:
+firebase-admin@^10.2.0:
   version "10.2.0"
   resolved "https://registry.yarnpkg.com/firebase-admin/-/firebase-admin-10.2.0.tgz#e5a97d35819b5872e3e29384b48f67dab59ede04"
   integrity sha512-6ehn5J9UEFgi4+naqYvozmGpnZae3cJLdwSkSsDc8/Y0eTBjVMFdf9N2ft7N81UNHA0N5DknOyXhlsdAdyBLCA==
