@@ -30,7 +30,7 @@ const authServer = (client, admin, app) => {
                 throw new Error("invalid_email");
             }
             const db = app.firestore();
-            const doc = await db.collection("emails").doc(discordUserID).get();
+            const doc = await db.collection("users").doc(discordUserID).get();
             // check if user is already in database
             if (doc.exists) {
                 throw new Error("user_exists");
@@ -65,7 +65,7 @@ const authServer = (client, admin, app) => {
                 version: 2.0,
             };
             try {
-                await db.collection("emails").doc(discordUserID).set(userObject);
+                await db.collection("users").doc(discordUserID).set(userObject);
             }
             catch (err) {
                 console.log(err);
@@ -88,7 +88,6 @@ const authServer = (client, admin, app) => {
             return;
         }
         catch (err) {
-            console.log(err);
             let errorType;
             if (err.message.toLowerCase().includes("request failed with status code")) {
                 errorType = "discord_error";

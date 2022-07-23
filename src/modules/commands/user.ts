@@ -243,7 +243,11 @@ export default {
 
     if (action === "getinfo") {
       // find email by id in database
+      console.log(user.id);
+
       const dbQuery = await db.collection("users").doc(user.id).get();
+
+      console.log(dbQuery.data());
 
       if (dbQuery.exists) {
         const dbUser = dbQuery.data();
@@ -289,19 +293,33 @@ export default {
       if (dbQuery.exists) {
         const dbUser = dbQuery.data();
 
-        member.setNickname(dbUser.name);
+        if (dbUser.name) {
+          member.setNickname(dbUser.name);
 
-        const embed = {
-          color: "#22C55E",
-          title: "Reset Nickname",
-          description: `${member.displayName}'s nickname was reset to \`${dbUser.name}\`.`,
-          timestamp: new Date(),
-        };
+          const embed = {
+            color: "#22C55E",
+            title: "Reset Nickname",
+            description: `${member.displayName}'s nickname was reset to \`${dbUser.name}\`.`,
+            timestamp: new Date(),
+          };
 
-        await interaction.reply({
-          embeds: [embed],
-          ephemeral: true,
-        });
+          await interaction.reply({
+            embeds: [embed],
+            ephemeral: true,
+          });
+        } else {
+          const embed = {
+            color: "#DC2626",
+            title: "Error",
+            description: `${user.tag}'s nickname is \`undefined\``,
+            timestamp: new Date(),
+          };
+
+          await interaction.reply({
+            embeds: [embed],
+            ephemeral: true,
+          });
+        }
 
         return;
       } else {

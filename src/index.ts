@@ -352,7 +352,7 @@ client.on("guildMemberRemove", async (member) => {
 
   const db = app.firestore();
 
-  await db.collection("emails").doc(user.id).delete();
+  await db.collection("users").doc(user.id).delete();
 });
 
 // message reaction add

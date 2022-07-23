@@ -56,7 +56,7 @@ const authServer = (client: Client, admin, app) => {
 
       const db = app.firestore();
 
-      const doc = await db.collection("emails").doc(discordUserID).get();
+      const doc = await db.collection("users").doc(discordUserID).get();
 
       // check if user is already in database
       if (doc.exists) {
@@ -96,7 +96,7 @@ const authServer = (client: Client, admin, app) => {
       };
 
       try {
-        await db.collection("emails").doc(discordUserID).set(userObject);
+        await db.collection("users").doc(discordUserID).set(userObject);
       } catch (err) {
         console.log(err);
         throw new Error("database_error");
@@ -121,8 +121,6 @@ const authServer = (client: Client, admin, app) => {
       res.redirect("https://auth.bhs.sh/success");
       return;
     } catch (err) {
-      console.log(err);
-
       let errorType;
 
       if (
