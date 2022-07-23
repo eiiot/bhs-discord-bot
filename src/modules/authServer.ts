@@ -140,8 +140,8 @@ const authServer = (client: Client, admin, app) => {
     }
   });
 
-  expressApp.listen(80, () => {
-    console.log(`Listening on port ${80}`);
+  expressApp.listen(3000, () => {
+    console.log(`Listening on port ${3000}`);
   });
 };
 
