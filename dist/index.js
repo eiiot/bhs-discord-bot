@@ -2,7 +2,7 @@ import Discord from "discord.js";
 import dotenv from "dotenv";
 import admin from "firebase-admin";
 import serviceAccountKey from "../serviceAccountKey.js";
-import { help, user, studyroom, stats, archive, leaderboard, short, } from "./modules/commands";
+import { help, user, studyroom, stats, archive, short, } from "./modules/commands";
 import authServer from "./modules/authServer.js";
 import suggestionMessages from "./modules/suggestionMessages";
 if (!serviceAccountKey) {
@@ -45,7 +45,6 @@ const slashCommands = new Map([
     [studyroom.name, studyroom],
     [stats.name, stats],
     [archive.name, archive],
-    [leaderboard.name, leaderboard],
     [short.name, short],
 ]);
 // ? DISCORD BOT FUNCTIONS ? //
