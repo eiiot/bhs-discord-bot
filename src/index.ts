@@ -9,7 +9,6 @@ import {
   studyroom,
   stats,
   archive,
-  leaderboard,
   short,
 } from "./modules/commands";
 
@@ -67,7 +66,6 @@ const slashCommands = new Map([
   [studyroom.name, studyroom],
   [stats.name, stats],
   [archive.name, archive],
-  [leaderboard.name, leaderboard],
   [short.name, short],
 ]);
 
