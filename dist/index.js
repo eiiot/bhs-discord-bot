@@ -2,8 +2,8 @@ import Discord from "discord.js";
 import dotenv from "dotenv";
 import admin from "firebase-admin";
 import serviceAccountKey from "../serviceAccountKey.js";
+import jwt from "jsonwebtoken";
 import { help, user, studyroom, stats, archive, short, } from "./modules/commands";
-import authServer from "./modules/authServer.js";
 import suggestionMessages from "./modules/suggestionMessages";
 if (!serviceAccountKey) {
     console.error("No service account key found. Are you sure you imported seriveAccountKey.js?");
@@ -70,6 +70,40 @@ client.on("ready", () => {
         .set(commandsArray)
         .then(() => console.log("Set guild commands"))
         .catch((err) => console.error("Error setting commands: ", err));
+    // set up verify menu in #verify
+    /* const verifyChannel = guild.channels.cache.get(
+      "787039874384396329"
+    ) as TextChannel;
+  
+  
+    verifyChannel.send({
+      embeds: [
+        {
+          title: "Verify for the BHS Discord",
+          description: `We verify users to make sure that every student who joins the BHS Discord is a BUSD student! Don't worry, verification is a simple process, that only takes ~1 minute.
+  
+  Step 1: Click the button below!
+  Step 2: Follow the directions, and sign in with your BUSD email.
+  Step 3: That's it! You're now verified. Enjoy the BHS Discord!
+  
+  *If you encounter any issues with the verification process, or would like to use a different name than the one specified on your Google account, please contact <@434013914091487232>*`,
+          color: "#F7F624",
+        },
+      ],
+      components: [
+        {
+          type: "ACTION_ROW",
+          components: [
+            {
+              type: "BUTTON",
+              style: "PRIMARY",
+              label: "Verify",
+              custom_id: "verify_button",
+            },
+          ],
+        },
+      ],
+    }); */
 });
 // bot owner commands
 client.on("messageCreate", async (message) => {
@@ -206,6 +240,32 @@ client.on("interactionCreate", async (interaction) => {
                 components: [row],
             });
         }
+        if (interaction.customId === "verify_button") {
+            let userId = interaction.user.id;
+            let secret = process.env.AUTH_SECRET;
+            var i = "Berkeley High Discord"; // Issuer
+            let token = jwt.sign({ userId }, secret, {
+                expiresIn: "10m",
+                issuer: i,
+            });
+            let url = `http://auth.bhs.sh/api/verify?token=${token}`;
+            interaction.reply({
+                embeds: [
+                    new Discord.MessageEmbed()
+                        .setTitle("Verify your account!")
+                        .setDescription("Please click the button below to verify your account! This link will expire in 10 minutes.")
+                        .setColor("#00ff00")
+                        .setTimestamp(),
+                ],
+                components: [
+                    new Discord.MessageActionRow().addComponents(new Discord.MessageButton()
+                        .setStyle("LINK")
+                        .setLabel("Verify")
+                        .setURL(url)),
+                ],
+                ephemeral: true,
+            });
+        }
     }
     if (interaction.isSelectMenu() && interaction.inCachedGuild()) {
         if (interaction.customId.startsWith("role")) {
@@ -259,15 +319,10 @@ client.on("guildMemberAdd", async (member) => {
     const welcomeEmbed = {
         color: 0xeff624,
         title: "How to Verify for the BHS Discord!",
-        description: "We verify users to make sure that every student who joins the BHS Discord is a BUSD student! Don't worry, verification is a simple process, that only takes ~1 minute.\n\n**Step 1:** Visit the link below! (If you're having issues, the link is https://auth.bhs.sh)\n**Step 2:** Follow the directions, and sign in with your BUSD email, and Discord account.\n**Step 3:** That's it! You're now verified. Enjoy the BHS Discord!\n\n*If you encounter any issues with the verification process, or would like to use a different name than the one specified on your Google account, please contact <@434013914091487232>*",
+        description: "We verify users to make sure that every student who joins the BHS Discord is a BUSD student! Don't worry, verification is a simple process, that only takes ~1 minute. Head over to <#787039874384396329> to learn more!",
     };
-    const row = new Discord.MessageActionRow().addComponents(new Discord.MessageButton()
-        .setLabel(`Click Me!`)
-        .setStyle("LINK")
-        .setURL(`https://auth.bhs.sh`));
     member.send({
         embeds: [welcomeEmbed],
-        components: [row],
     });
     await adminChannel.send({
         embeds: [embed],
@@ -312,5 +367,3 @@ client.on("presenceUpdate", async (oldPresence, newPresence) => {
     });
 });
 client.login(process.env.BOT_TOKEN);
-// ? WEB API & EXPRESS ? //
-authServer(client, admin, app);
