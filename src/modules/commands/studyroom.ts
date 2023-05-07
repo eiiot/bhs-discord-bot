@@ -1,16 +1,21 @@
+import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+
+const data = new SlashCommandBuilder()
+  .setName("studyroom")
+  .setDescription("Create a study room")
+  .addIntegerOption((option) =>
+    option
+      .setName("userlimit")
+      .setDescription("The maximum number of users allowed in the study room")
+      .setRequired(false)
+  )
+  .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages);
+
 export default {
   name: "studyroom",
-  description: "Create a study room",
-  options: [
-    {
-      name: "userlimit",
-      description: `The maximum number of users allowed in the studyroom`,
-      required: false,
-      type: "INTEGER",
-    },
-  ],
-  execute: async (interaction, client, app) => {
-    let users = interaction.options.get("userlimit");
+  data,
+  async execute(interaction, client, app) {
+    let userLimit = interaction.options.getInteger("userlimit");
     let guild = interaction.guild;
     let member = await guild.members.fetch(interaction.user.id);
     // create a new voice channel
@@ -21,7 +26,7 @@ export default {
         type: "GUILD_VOICE",
         topic: `Created by ${interaction.user.username}`,
         parent: "762757482274881536",
-        userLimit: users ? users.value : 50,
+        userLimit: userLimit ? userLimit : 50,
       }
     );
 
@@ -36,11 +41,4 @@ export default {
       embeds: [embed],
     });
   },
-  permissions: [
-    // {
-    //   id: "", // the id of the role, or the id of the user
-    //   type: "", // ROLE or USER
-    //   permission: "" // true or false (if true, the user or role has the permission)
-    // }
-  ],
 };

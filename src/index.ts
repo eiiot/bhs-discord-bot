@@ -1,4 +1,15 @@
-import Discord, { TextChannel } from "discord.js";
+import Discord, {
+  ActionRowBuilder,
+  ActivityType,
+  ButtonBuilder,
+  ButtonStyle,
+  Client,
+  EmbedBuilder,
+  Partials,
+  SelectMenuType,
+  StringSelectMenuBuilder,
+  TextChannel,
+} from "discord.js";
 import dotenv from "dotenv";
 import admin, { ServiceAccount } from "firebase-admin";
 import serviceAccountKey from "../serviceAccountKey.js";
@@ -7,11 +18,11 @@ import jose from "jose";
 
 import {
   help,
-  user,
+  // user,
   studyroom,
   stats,
   archive,
-  short,
+  // short,
 } from "./modules/commands";
 
 import suggestionMessages from "./modules/suggestionMessages";
@@ -35,24 +46,24 @@ if (!process.env.BOT_TOKEN) {
   process.exit(1);
 }
 
-const client = new Discord.Client({
+const client = new Client({
   intents: [
-    "GUILDS",
-    "GUILD_MEMBERS",
-    "GUILD_EMOJIS_AND_STICKERS",
-    "GUILD_INTEGRATIONS",
-    "GUILD_MESSAGE_REACTIONS",
-    "GUILD_WEBHOOKS",
-    "GUILD_INVITES",
-    "GUILD_VOICE_STATES",
-    "GUILD_PRESENCES",
-    "GUILD_MESSAGES",
-    "GUILD_MESSAGE_TYPING",
-    "DIRECT_MESSAGES",
-    "DIRECT_MESSAGE_REACTIONS",
-    "DIRECT_MESSAGE_TYPING",
+    "Guilds",
+    "GuildMembers",
+    "GuildEmojisAndStickers",
+    "GuildIntegrations",
+    "GuildMessageReactions",
+    "GuildWebhooks",
+    "GuildInvites",
+    "GuildVoiceStates",
+    "GuildPresences",
+    "GuildMessages",
+    "GuildMessageTyping",
+    "DirectMessages",
+    "DirectMessageReactions",
+    "DirectMessageTyping",
   ],
-  partials: ["MESSAGE", "CHANNEL", "REACTION"],
+  partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
 
 const app = admin.initializeApp({
@@ -63,11 +74,11 @@ const app = admin.initializeApp({
 
 const slashCommands = new Map([
   [help.name, help],
-  [user.name, user],
+  // [user.name, user],
   [studyroom.name, studyroom],
   [stats.name, stats],
   [archive.name, archive],
-  [short.name, short],
+  // [short.name, short],
 ]);
 
 // ? DISCORD BOT FUNCTIONS ? //
@@ -79,7 +90,7 @@ client.on("ready", () => {
   const guild = client.guilds.cache.get(`762412666521124866`);
 
   client.user.setActivity(`Helping ${guild.memberCount} students!`, {
-    type: "PLAYING",
+    type: ActivityType.Playing,
   });
 
   // bulk register commands
@@ -88,10 +99,9 @@ client.on("ready", () => {
 
   for (const [commandName, command] of slashCommands) {
     const commandConfig = {
-      name: command.name,
-      description: command.description,
-      options: command.options,
-      default_member_permissions: command.permissions,
+      name: command.data.name,
+      description: command.data.description,
+      options: command.data.options,
     };
 
     commandsArray.push(commandConfig);
@@ -259,8 +269,8 @@ client.on("interactionCreate", async (interaction) => {
     ];
 
     if (interaction.customId === "add_roles") {
-      const row = new Discord.MessageActionRow().addComponents(
-        new Discord.MessageSelectMenu()
+      const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+        new StringSelectMenuBuilder()
           .setCustomId("role_add")
           .setPlaceholder("Nothing selected")
           .setMinValues(1)
@@ -274,8 +284,8 @@ client.on("interactionCreate", async (interaction) => {
     }
 
     if (interaction.customId === "remove_roles") {
-      const row = new Discord.MessageActionRow().addComponents(
-        new Discord.MessageSelectMenu()
+      const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+        new StringSelectMenuBuilder()
           .setCustomId("role_remove")
           .setPlaceholder("Nothing selected")
           .setMinValues(1)
@@ -303,7 +313,7 @@ client.on("interactionCreate", async (interaction) => {
 
       interaction.reply({
         embeds: [
-          new Discord.MessageEmbed()
+          new EmbedBuilder()
             .setTitle("Verify your account!")
             .setDescription(
               "Please click the button below to verify your account! This link will expire in 10 minutes."
@@ -312,9 +322,9 @@ client.on("interactionCreate", async (interaction) => {
             .setTimestamp(),
         ],
         components: [
-          new Discord.MessageActionRow().addComponents(
-            new Discord.MessageButton()
-              .setStyle("LINK")
+          new ActionRowBuilder<ButtonBuilder>().addComponents(
+            new ButtonBuilder()
+              .setStyle(ButtonStyle.Link)
               .setLabel("Verify")
               .setURL(url)
           ),
@@ -322,7 +332,6 @@ client.on("interactionCreate", async (interaction) => {
         ephemeral: true,
       });
     }
-      
   }
 
   if (interaction.isSelectMenu() && interaction.inCachedGuild()) {
@@ -373,12 +382,12 @@ client.on("guildMemberAdd", async (member) => {
     "877376896311132210"
   )) as TextChannel;
   const user = member.user;
-  const embed = {
-    color: 0xeff624,
-    title: "Member Joined",
-    description: `<@${user.id}> has joined the server!`,
-    timestamp: new Date(),
-  };
+
+  const embed = new EmbedBuilder()
+    .setColor(0xeff624)
+    .setTitle("Member Joined")
+    .setDescription(`<@${user.id}> has joined the server!`)
+    .setTimestamp(new Date());
 
   const welcomeEmbed = {
     color: 0xeff624,
@@ -403,12 +412,13 @@ client.on("guildMemberRemove", async (member) => {
     "877376896311132210"
   )) as TextChannel;
   const user = member.user;
-  const embed = {
-    color: 0xeff624,
-    title: "Member Left",
-    description: `<@${user.id}> has left the server!`,
-    timestamp: new Date(),
-  };
+
+  const embed = new EmbedBuilder()
+    .setColor(0xeff624)
+    .setTitle("Member Left")
+    .setDescription(`<@${user.id}> has left the server!`)
+    .setTimestamp(new Date());
+
   await adminChannel.send({
     embeds: [embed],
   });
@@ -441,7 +451,7 @@ client.on("presenceUpdate", async (oldPresence, newPresence) => {
   const member = newPresence.member;
 
   client.user.setActivity(`Helping ${guild.memberCount} students!`, {
-    type: "PLAYING",
+    type: ActivityType.Playing,
   });
 });
 

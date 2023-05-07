@@ -1,15 +1,12 @@
+import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+const data = new SlashCommandBuilder()
+    .setName("stats")
+    .setDescription("View statistics about the server")
+    .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages);
 export default {
     name: "stats",
-    description: "View statistics about the server",
-    options: [
-    // {
-    //   name: "", // the name of the option
-    //   type: "", // STRING, INTEGER, BOOLEAN, USER, CHOICE
-    //   description: "", // the description of the option
-    //   required: true, // if the option is required for the command to execute
-    // },
-    ],
-    execute: async (interaction, client, app) => {
+    data,
+    async execute(interaction) {
         // server statistics
         const server = interaction.guild;
         const memberCount = server.memberCount;
@@ -44,11 +41,4 @@ export default {
             embeds: [embed],
         });
     },
-    permissions: [
-    // {
-    //   id: "", // the id of the role, or the id of the user
-    //   type: "", // ROLE or USER
-    //   permission: "" // true or false (if true, the user or role has the permission)
-    // }
-    ],
 };

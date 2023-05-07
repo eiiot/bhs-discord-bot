@@ -1,15 +1,22 @@
+import { EmbedBuilder } from "discord.js";
 const suggestionMessages = async (message, client) => {
     let suggestion = message.content;
     const member = await message.guild.members.fetch(message.author.id);
-    const embed = {
-        color: 0xeff624,
-        thumbnail: {
-            url: message.author.avatarURL(),
-        },
-        title: member.nickname,
-        description: suggestion,
-        timestamp: new Date(),
-    };
+    // const embed = {
+    //   color: 0xeff624,
+    //   thumbnail: {
+    //     url: message.author.avatarURL(),
+    //   },
+    //   title: member.nickname,
+    //   description: suggestion,
+    //   timestamp: new Date(),
+    // };
+    const embed = new EmbedBuilder()
+        .setColor(0xeff624)
+        .setThumbnail(message.author.avatarURL())
+        .setTitle(member.nickname)
+        .setDescription(suggestion)
+        .setTimestamp(new Date());
     const channel = (await message.guild.channels.fetch("839965498291519538"));
     const suggestionMsg = await channel.send({
         embeds: [embed],
@@ -22,12 +29,11 @@ const suggestionMessages = async (message, client) => {
         autoArchiveDuration: 4320,
         reason: suggestion,
     });
-    const replyEmbed = {
-        color: 0xeff624,
-        title: "Suggestion Submitted!",
-        description: `Your suggestion has been submitted! You can view it in <#839965498291519538>`,
-        timestamp: new Date(),
-    };
+    const replyEmbed = new EmbedBuilder()
+        .setColor(0xeff624)
+        .setTitle("Suggestion Submitted!")
+        .setDescription(`Your suggestion has been submitted! You can view it in <#839965498291519538>`)
+        .setTimestamp(new Date());
     message.author.send({
         embeds: [replyEmbed],
     });
